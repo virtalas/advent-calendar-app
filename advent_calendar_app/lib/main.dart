@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(AdventCalendarApp());
+  runApp(const AdventCalendarApp());
 }
 
 class AdventCalendarApp extends StatefulWidget {
@@ -12,7 +12,7 @@ class AdventCalendarApp extends StatefulWidget {
 }
 
 class _AdventCalendarAppState extends State<AdventCalendarApp> {
-  List<bool> _openStates = <bool>[true, true, true, true];
+  final List<bool> _openStates = <bool>[true, true, true, true];
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +27,14 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
           itemCount: days.length,
           itemBuilder: (BuildContext context, int index) {
             return GestureDetector(
-              onTap: (){
+              onTap: () {
                 _toggleIsOpen(index);
               },
               child: CalendarDoor(day: days[index], isOpen: _openStates[index]),
             );
           },
-          separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 64),
+          separatorBuilder: (BuildContext context, int index) =>
+              const SizedBox(height: 64),
         ),
       ),
     );
@@ -57,24 +58,27 @@ class CalendarDoor extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CalendarSingleDoor(text: '${day}. lu', isOnLeft: true, isOpen: isOpen),
-        CalendarSingleDoor(text: 'ukku', isOnLeft: false, isOpen: isOpen),
+        FlipWidget(
+            child: CalendarHatchPair(
+                text: '${day}. luukku', isOpen: isOpen)),
       ],
     );
   }
 }
 
-class CalendarSingleDoor extends StatelessWidget {
+class CalendarHatchPair extends StatelessWidget {
   final String text;
-  final bool isOnLeft;
   final bool isOpen;
 
-  const CalendarSingleDoor({super.key, required this.text, required this.isOnLeft, required this.isOpen});
+  const CalendarHatchPair(
+      {super.key,
+      required this.text,
+      required this.isOpen});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: isOpen ? 100 : 150,
+      width: isOpen ? 250 : 200,
       height: 400,
       decoration: BoxDecoration(
         color: const Color(0xff7c94b6),
@@ -83,9 +87,42 @@ class CalendarSingleDoor extends StatelessWidget {
         ),
       ),
       child: Align(
-        alignment: isOnLeft ? Alignment.centerRight : Alignment.centerLeft,
-        child: Text(text, style: const TextStyle(fontSize: 30),),
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 30),
+        ),
       ),
+    );
+  }
+}
+
+class FlipWidget extends StatelessWidget {
+  Widget child;
+
+  FlipWidget({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ClipRect(
+            child: Align(
+          alignment: Alignment.centerLeft,
+          widthFactor: 0.5,
+          child: child,
+        )),
+        const Padding(
+          padding: EdgeInsets.only(right: 1),
+        ),
+        ClipRect(
+            child: Align(
+          alignment: Alignment.centerRight,
+          widthFactor: 0.5,
+          child: child,
+        )),
+      ],
     );
   }
 }
