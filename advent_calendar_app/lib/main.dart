@@ -59,7 +59,9 @@ class CalendarDoor extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FlipWidget(
-            child: CalendarHatchPair(text: '${day}. luukku', isOpen: isOpen)),
+            childd: CalendarHatchPair(text: '$day. luukku', isOpen: isOpen),
+          isFlipped: isOpen,
+        ),
       ],
     );
   }
@@ -75,7 +77,7 @@ class CalendarHatchPair extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: isOpen ? 250 : 200,
+      width: 250,
       height: 400,
       decoration: BoxDecoration(
         color: const Color(0xff7c94b6),
@@ -95,26 +97,38 @@ class CalendarHatchPair extends StatelessWidget {
 }
 
 class FlipWidget extends StatelessWidget {
-  Widget child;
+  Widget childd;
+  final bool isFlipped;
 
-  FlipWidget({super.key, required this.child});
+  FlipWidget({super.key, required this.childd, required this.isFlipped});
 
   @override
   Widget build(BuildContext context) {
+    const double startAngle = 0;
+    const double endAngle = 2;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Transform(
-          transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.001)
-            ..rotateY(2), // Closed: 0, open: 2
-          alignment: Alignment.centerLeft,
+        TweenAnimationBuilder(
+          duration: const Duration(milliseconds: 1000),
+          curve: Curves.easeInOutSine,
+          tween: Tween<double>(begin: isFlipped ? endAngle : startAngle, end: isFlipped ? startAngle : endAngle),
+          builder: (BuildContext context, double size, Widget? child) {
+            return Transform(
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateY(size),
+              alignment: Alignment.centerLeft,
+              child: child,
+            );
+          },
           child: ClipRect(
               child: Align(
-            alignment: Alignment.centerLeft,
-            widthFactor: 0.5,
-            child: child,
-          )),
+                alignment: Alignment.centerLeft,
+                widthFactor: 0.5,
+                child: childd,
+              )),
         ),
         const Padding(
           padding: EdgeInsets.only(right: 1),
@@ -123,7 +137,7 @@ class FlipWidget extends StatelessWidget {
             child: Align(
           alignment: Alignment.centerRight,
           widthFactor: 0.5,
-          child: child,
+          child: childd,
         )),
       ],
     );
