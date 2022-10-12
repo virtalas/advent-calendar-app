@@ -59,8 +59,7 @@ class CalendarDoor extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FlipWidget(
-            child: CalendarHatchPair(
-                text: '${day}. luukku', isOpen: isOpen)),
+            child: CalendarHatchPair(text: '${day}. luukku', isOpen: isOpen)),
       ],
     );
   }
@@ -71,9 +70,7 @@ class CalendarHatchPair extends StatelessWidget {
   final bool isOpen;
 
   const CalendarHatchPair(
-      {super.key,
-      required this.text,
-      required this.isOpen});
+      {super.key, required this.text, required this.isOpen});
 
   @override
   Widget build(BuildContext context) {
@@ -107,12 +104,18 @@ class FlipWidget extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ClipRect(
-            child: Align(
+        Transform(
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateY(2), // Closed: 0, open: 2
           alignment: Alignment.centerLeft,
-          widthFactor: 0.5,
-          child: child,
-        )),
+          child: ClipRect(
+              child: Align(
+            alignment: Alignment.centerLeft,
+            widthFactor: 0.5,
+            child: child,
+          )),
+        ),
         const Padding(
           padding: EdgeInsets.only(right: 1),
         ),
