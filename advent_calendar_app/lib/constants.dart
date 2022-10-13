@@ -7,8 +7,8 @@ const Color doorBackColor = Colors.redAccent;
 
 // Size
 const double doorHeight = 300;
-const double crackLength = 1;
-const double doorBorderWidth = 1;
+const double crackLength = 1.5;
+const double doorBorderWidth = 1.5;
 
 // Animation
 const double doorStartAngle = 0;
