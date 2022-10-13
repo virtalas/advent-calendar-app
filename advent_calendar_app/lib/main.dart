@@ -27,7 +27,9 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
           padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 0),
           itemCount: days.length,
           itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(
+            return InkWell(
+              splashFactory: NoSplash.splashFactory,
+              highlightColor: Colors.transparent,
               onTap: () {
                 _toggleIsOpen(index);
               },
