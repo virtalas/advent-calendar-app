@@ -60,7 +60,7 @@ class CalendarDoor extends StatelessWidget {
       children: [
         FlipWidget(
           isFlipped: isOpen,
-          child: CalendarHatchPair(text: '$day. luukku', isOpen: isOpen),
+          child: CalendarHatchPair(text: '$day. luukku'),
         ),
       ],
     );
@@ -69,10 +69,9 @@ class CalendarDoor extends StatelessWidget {
 
 class CalendarHatchPair extends StatelessWidget {
   final String text;
-  final bool isOpen;
 
   const CalendarHatchPair(
-      {super.key, required this.text, required this.isOpen});
+      {super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
