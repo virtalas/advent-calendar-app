@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'CalendarDoor.dart';
 import 'constants.dart' as constants;
 
 void main() {
@@ -81,16 +82,25 @@ class CalendarRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String text = '$day. luukku';
+    Widget doorWidget;
+
+    if ((day % 3 == 0 && day % 2 == 0) || day % 5 == 0) {
+      doorWidget = CalendarDoubleDoor(
+        isFlipped: isOpen,
+        text: text,
+        animated: animated,
+        didAnimate: didAnimate,
+      );
+    } else {
+      doorWidget = CalendarSingleDoor(text: text, isFlipped: isOpen, animated: animated, didAnimate: didAnimate);
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CalendarDoorContent(
-          child: CalendarDoubleDoor(
-            isFlipped: isOpen,
-            text: '$day. luukku',
-            animated: animated,
-            didAnimate: didAnimate,
-          ),
+          child: doorWidget,
         ),
       ],
     );
@@ -109,102 +119,6 @@ class CalendarDoorContent extends StatelessWidget {
         color: Colors.orange,
       ),
       child: child,
-    );
-  }
-}
-
-// TODO: CalendarSingleDoor
-
-class CalendarDoubleDoor extends StatelessWidget {
-  String text;
-  final bool isFlipped;
-  final bool animated;
-  final Function didAnimate;
-
-  CalendarDoubleDoor(
-      {super.key,
-      required this.text,
-      required this.isFlipped,
-      required this.animated,
-      required this.didAnimate});
-
-  @override
-  Widget build(BuildContext context) {
-    const double startAngle = 0;
-    const double endAngle = 2;
-    const double halfOpenAngle = 1.5708; // 90 degrees in radians
-    const int duration = 1000;
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TweenAnimationBuilder(
-          duration: Duration(milliseconds: animated ? duration : 0),
-          curve: Curves.easeInOutSine,
-          tween: Tween<double>(
-              begin: isFlipped ? endAngle : startAngle,
-              end: isFlipped ? startAngle : endAngle),
-          builder: (BuildContext context, double angle, Widget? child) {
-            final bool isMoreThanHalfOpen = angle >= halfOpenAngle;
-            return Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(angle),
-              alignment: Alignment.centerLeft,
-              child: ClipRect(
-                  child: Align(
-                alignment: Alignment.centerLeft,
-                widthFactor: 0.5,
-                child: CalendarDoor(text: isMoreThanHalfOpen ? '' : text, isFront: !isMoreThanHalfOpen,),
-              )),
-            );
-          },
-          child: null,
-          onEnd: () {
-            didAnimate();
-          },
-        ),
-        const SizedBox(
-          width: constants.crackLength,
-        ),
-        ClipRect(
-            child: Align(
-          alignment: Alignment.centerRight,
-          widthFactor: 0.5,
-          child: CalendarDoor(
-            text: text,
-            isFront: true,
-          ),
-        )),
-      ],
-    );
-  }
-}
-
-class CalendarDoor extends StatelessWidget {
-  final String text;
-  final bool isFront;
-
-  const CalendarDoor({super.key, required this.text, required this.isFront});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 280,
-      height: constants.doorHeight,
-      decoration: BoxDecoration(
-        color: isFront ? constants.doorFrontColor : constants.doorBackColor,
-        border: Border.all(
-          width: 0.5,
-        ),
-      ),
-      child: Align(
-        alignment: Alignment.center,
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 30, color: Colors.white),
-        ),
-      ),
     );
   }
 }
