@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'constants.dart' as constants;
 
 void main() {
   runApp(const AdventCalendarApp());
@@ -23,6 +24,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
 
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: constants.calendarRed,
         body: ListView.separated(
           padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 0),
           itemCount: days.length,
@@ -82,13 +84,31 @@ class CalendarRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CalendarDoubleDoor(
-          isFlipped: isOpen,
-          text: '$day. luukku',
-          animated: animated,
-          didAnimate: didAnimate,
+        CalendarDoorContent(
+          child: CalendarDoubleDoor(
+            isFlipped: isOpen,
+            text: '$day. luukku',
+            animated: animated,
+            didAnimate: didAnimate,
+          ),
         ),
       ],
+    );
+  }
+}
+
+class CalendarDoorContent extends StatelessWidget {
+  Widget child;
+  CalendarDoorContent({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: constants.doorHeight + constants.crackLength * 2,
+      decoration: const BoxDecoration(
+        color: Colors.orange,
+      ),
+      child: child,
     );
   }
 }
@@ -125,6 +145,7 @@ class CalendarDoubleDoor extends StatelessWidget {
               begin: isFlipped ? endAngle : startAngle,
               end: isFlipped ? startAngle : endAngle),
           builder: (BuildContext context, double angle, Widget? child) {
+            final bool isMoreThanHalfOpen = angle >= halfOpenAngle;
             return Transform(
               transform: Matrix4.identity()
                 ..setEntry(3, 2, 0.001)
@@ -134,7 +155,7 @@ class CalendarDoubleDoor extends StatelessWidget {
                   child: Align(
                 alignment: Alignment.centerLeft,
                 widthFactor: 0.5,
-                child: CalendarDoor(text: angle >= halfOpenAngle ? '' : text),
+                child: CalendarDoor(text: isMoreThanHalfOpen ? '' : text, isFront: !isMoreThanHalfOpen,),
               )),
             );
           },
@@ -143,8 +164,8 @@ class CalendarDoubleDoor extends StatelessWidget {
             didAnimate();
           },
         ),
-        const Padding(
-          padding: EdgeInsets.only(right: 1),
+        const SizedBox(
+          width: constants.crackLength,
         ),
         ClipRect(
             child: Align(
@@ -152,6 +173,7 @@ class CalendarDoubleDoor extends StatelessWidget {
           widthFactor: 0.5,
           child: CalendarDoor(
             text: text,
+            isFront: true,
           ),
         )),
       ],
@@ -161,25 +183,26 @@ class CalendarDoubleDoor extends StatelessWidget {
 
 class CalendarDoor extends StatelessWidget {
   final String text;
+  final bool isFront;
 
-  const CalendarDoor({super.key, required this.text});
+  const CalendarDoor({super.key, required this.text, required this.isFront});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 280,
-      height: 300,
+      height: constants.doorHeight,
       decoration: BoxDecoration(
-        color: const Color(0xff7c94b6),
+        color: isFront ? constants.doorFrontColor : constants.doorBackColor,
         border: Border.all(
-          width: 1,
+          width: 0.5,
         ),
       ),
       child: Align(
         alignment: Alignment.center,
         child: Text(
           text,
-          style: const TextStyle(fontSize: 30),
+          style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
       ),
     );
