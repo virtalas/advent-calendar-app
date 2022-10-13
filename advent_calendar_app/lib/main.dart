@@ -13,6 +13,7 @@ class AdventCalendarApp extends StatefulWidget {
 
 class _AdventCalendarAppState extends State<AdventCalendarApp> {
   final List<bool> _openStates = <bool>[true, true, true, true];
+  final List<bool> _needsAnimating = <bool>[false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,14 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
               onTap: () {
                 _toggleIsOpen(index);
               },
-              child: CalendarRow(day: days[index], isOpen: _openStates[index]),
+              child: CalendarRow(
+                day: days[index],
+                isOpen: _openStates[index],
+                animated: _needsAnimating[index],
+                didAnimate: () {
+                  didAnimate(index);
+                },
+              ),
             );
           },
           separatorBuilder: (BuildContext context, int index) =>
@@ -43,6 +51,13 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
   void _toggleIsOpen(int index) {
     setState(() {
       _openStates[index] = !_openStates[index];
+      _needsAnimating[index] = true;
+    });
+  }
+
+  void didAnimate(int index) {
+    setState(() {
+      _needsAnimating[index] = false;
     });
   }
 }
@@ -50,8 +65,15 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
 class CalendarRow extends StatelessWidget {
   final int day;
   final bool isOpen;
+  final bool animated;
+  final Function didAnimate;
 
-  const CalendarRow({super.key, required this.day, required this.isOpen});
+  const CalendarRow(
+      {super.key,
+      required this.day,
+      required this.isOpen,
+      required this.animated,
+      required this.didAnimate});
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +83,8 @@ class CalendarRow extends StatelessWidget {
         CalendarDoubleDoor(
           isFlipped: isOpen,
           text: '$day. luukku',
+          animated: animated,
+          didAnimate: didAnimate,
         ),
       ],
     );
@@ -72,20 +96,28 @@ class CalendarRow extends StatelessWidget {
 class CalendarDoubleDoor extends StatelessWidget {
   String text;
   final bool isFlipped;
+  final bool animated;
+  final Function didAnimate;
 
-  CalendarDoubleDoor({super.key, required this.text, required this.isFlipped});
+  CalendarDoubleDoor(
+      {super.key,
+      required this.text,
+      required this.isFlipped,
+      required this.animated,
+      required this.didAnimate});
 
   @override
   Widget build(BuildContext context) {
     const double startAngle = 0;
     const double endAngle = 2;
     const double halfOpenAngle = 1.5708; // 90 degrees in radians
+    const int duration = 1000;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         TweenAnimationBuilder(
-          duration: const Duration(milliseconds: 1000),
+          duration: Duration(milliseconds: animated ? duration : 0),
           curve: Curves.easeInOutSine,
           tween: Tween<double>(
               begin: isFlipped ? endAngle : startAngle,
@@ -98,13 +130,16 @@ class CalendarDoubleDoor extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: ClipRect(
                   child: Align(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: 0.5,
-                    child: CalendarDoor(text: angle >= halfOpenAngle ? '' : text),
-                  )),
+                alignment: Alignment.centerLeft,
+                widthFactor: 0.5,
+                child: CalendarDoor(text: angle >= halfOpenAngle ? '' : text),
+              )),
             );
           },
           child: null,
+          onEnd: () {
+            didAnimate();
+          },
         ),
         const Padding(
           padding: EdgeInsets.only(right: 1),
@@ -113,7 +148,9 @@ class CalendarDoubleDoor extends StatelessWidget {
             child: Align(
           alignment: Alignment.centerRight,
           widthFactor: 0.5,
-          child: CalendarDoor(text: text,),
+          child: CalendarDoor(
+            text: text,
+          ),
         )),
       ],
     );
