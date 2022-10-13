@@ -30,7 +30,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
               onTap: () {
                 _toggleIsOpen(index);
               },
-              child: CalendarDoor(day: days[index], isOpen: _openStates[index]),
+              child: CalendarRow(day: days[index], isOpen: _openStates[index]),
             );
           },
           separatorBuilder: (BuildContext context, int index) =>
@@ -47,31 +47,83 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
   }
 }
 
-class CalendarDoor extends StatelessWidget {
+class CalendarRow extends StatelessWidget {
   final int day;
   final bool isOpen;
 
-  const CalendarDoor({super.key, required this.day, required this.isOpen});
+  const CalendarRow({super.key, required this.day, required this.isOpen});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FlipWidget(
+        CalendarDoubleDoor(
           isFlipped: isOpen,
-          child: CalendarHatchPair(text: '$day. luukku'),
+          text: '$day. luukku',
         ),
       ],
     );
   }
 }
 
-class CalendarHatchPair extends StatelessWidget {
+// TODO: CalendarSingleDoor
+
+class CalendarDoubleDoor extends StatelessWidget {
+  String text;
+  final bool isFlipped;
+
+  CalendarDoubleDoor({super.key, required this.text, required this.isFlipped});
+
+  @override
+  Widget build(BuildContext context) {
+    const double startAngle = 0;
+    const double endAngle = 2;
+    const double halfOpenAngle = 1.5708; // 90 degrees in radians
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TweenAnimationBuilder(
+          duration: const Duration(milliseconds: 1000),
+          curve: Curves.easeInOutSine,
+          tween: Tween<double>(
+              begin: isFlipped ? endAngle : startAngle,
+              end: isFlipped ? startAngle : endAngle),
+          builder: (BuildContext context, double angle, Widget? child) {
+            return Transform(
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateY(angle),
+              alignment: Alignment.centerLeft,
+              child: ClipRect(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: 0.5,
+                    child: CalendarDoor(text: angle >= halfOpenAngle ? '' : text),
+                  )),
+            );
+          },
+          child: null,
+        ),
+        const Padding(
+          padding: EdgeInsets.only(right: 1),
+        ),
+        ClipRect(
+            child: Align(
+          alignment: Alignment.centerRight,
+          widthFactor: 0.5,
+          child: CalendarDoor(text: text,),
+        )),
+      ],
+    );
+  }
+}
+
+class CalendarDoor extends StatelessWidget {
   final String text;
 
-  const CalendarHatchPair(
-      {super.key, required this.text});
+  const CalendarDoor({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -91,56 +143,6 @@ class CalendarHatchPair extends StatelessWidget {
           style: const TextStyle(fontSize: 30),
         ),
       ),
-    );
-  }
-}
-
-class FlipWidget extends StatelessWidget {
-  Widget child;
-  final bool isFlipped;
-
-  FlipWidget({super.key, required this.child, required this.isFlipped});
-
-  @override
-  Widget build(BuildContext context) {
-    const double startAngle = 0;
-    const double endAngle = 2;
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TweenAnimationBuilder(
-          duration: const Duration(milliseconds: 1000),
-          curve: Curves.easeInOutSine,
-          tween: Tween<double>(
-              begin: isFlipped ? endAngle : startAngle,
-              end: isFlipped ? startAngle : endAngle),
-          builder: (BuildContext context, double size, Widget? child) {
-            return Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(size),
-              alignment: Alignment.centerLeft,
-              child: child,
-            );
-          },
-          child: ClipRect(
-              child: Align(
-            alignment: Alignment.centerLeft,
-            widthFactor: 0.5,
-            child: child,
-          )),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(right: 1),
-        ),
-        ClipRect(
-            child: Align(
-          alignment: Alignment.centerRight,
-          widthFactor: 0.5,
-          child: child,
-        )),
-      ],
     );
   }
 }
