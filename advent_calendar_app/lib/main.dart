@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'CalendarDoor.dart';
 import 'constants.dart' as constants;
+import 'package:snowfall/snowfall/snowflakes.dart';
 
 void main() {
   runApp(const AdventCalendarApp());
@@ -93,13 +94,18 @@ class CalendarRow extends StatelessWidget {
         didAnimate: didAnimate,
       );
     } else {
-      doorWidget = CalendarSingleDoor(text: text, isFlipped: isOpen, animated: animated, didAnimate: didAnimate);
+      doorWidget = CalendarSingleDoor(
+          text: text,
+          isFlipped: isOpen,
+          animated: animated,
+          didAnimate: didAnimate);
     }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CalendarDoorContent(
+          isOpen: isOpen,
           child: doorWidget,
         ),
       ],
@@ -109,16 +115,48 @@ class CalendarRow extends StatelessWidget {
 
 class CalendarDoorContent extends StatelessWidget {
   Widget child;
-  CalendarDoorContent({super.key, required this.child});
+  bool isOpen;
+  CalendarDoorContent({super.key, required this.isOpen, required this.child});
 
   @override
   Widget build(BuildContext context) {
+    Widget? snowfall;
+    if (!isOpen) {
+      snowfall = SizedBox(
+        width: constants.doorHeight,
+        height: constants.doorHeight,
+        child: Stack(
+          children: [
+            Positioned.fill(child: ClippedSnowfall(isOpen: isOpen)),
+            Positioned.fill(child: child),
+          ],
+        ),
+      );
+    } else {
+      snowfall = child;
+    }
     return Container(
       height: constants.doorHeight + constants.crackLength * 2,
       decoration: const BoxDecoration(
         color: Colors.orange,
       ),
-      child: child,
+      child: snowfall,
+    );
+  }
+}
+
+class ClippedSnowfall extends StatelessWidget {
+  final bool isOpen;
+  const ClippedSnowfall({super.key, required this.isOpen});
+
+  // TODO: animate in/out with fade
+  // TODO: adjust snowflake size (have to include lib and modify?)
+
+  @override
+  Widget build(BuildContext context) {
+    return const ClipRect(
+      child:
+          Snowflakes(numberOfSnowflakes: 15, color: Colors.white, alpha: 180),
     );
   }
 }
