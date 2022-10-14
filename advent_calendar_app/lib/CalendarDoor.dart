@@ -42,10 +42,10 @@ class CalendarSingleDoor extends StatelessWidget {
 
   CalendarSingleDoor(
       {super.key,
-        required this.text,
-        required this.isFlipped,
-        required this.animated,
-        required this.didAnimate});
+      required this.text,
+      required this.isFlipped,
+      required this.animated,
+      required this.didAnimate});
 
   @override
   Widget build(BuildContext context) {
@@ -55,19 +55,28 @@ class CalendarSingleDoor extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           TweenAnimationBuilder(
-            duration: Duration(milliseconds: animated ? constants.doorAnimationDuration : 0),
+            duration: Duration(
+                milliseconds: animated ? constants.doorAnimationDuration : 0),
             curve: Curves.easeInOutSine,
             tween: Tween<double>(
-                begin: isFlipped ? constants.doorEndAngle : constants.doorStartAngle,
-                end: isFlipped ? constants.doorStartAngle : constants.doorEndAngle),
+                begin: isFlipped
+                    ? constants.doorEndAngle
+                    : constants.doorStartAngle,
+                end: isFlipped
+                    ? constants.doorStartAngle
+                    : constants.doorEndAngle),
             builder: (BuildContext context, double angle, Widget? child) {
-              final bool isMoreThanHalfOpen = angle >= constants.doorHalfOpenAngle;
+              final bool isMoreThanHalfOpen =
+                  angle >= constants.doorHalfOpenAngle;
               return Transform(
                 transform: Matrix4.identity()
                   ..setEntry(3, 2, 0.001)
                   ..rotateY(angle),
                 alignment: Alignment.centerLeft,
-                child: CalendarDoor(text: isMoreThanHalfOpen ? '' : text, isFront: !isMoreThanHalfOpen,),
+                child: CalendarDoor(
+                  text: isMoreThanHalfOpen ? '' : text,
+                  isFront: !isMoreThanHalfOpen,
+                ),
               );
             },
             child: null,
@@ -89,55 +98,92 @@ class CalendarDoubleDoor extends StatelessWidget {
 
   CalendarDoubleDoor(
       {super.key,
-        required this.text,
-        required this.isFlipped,
-        required this.animated,
-        required this.didAnimate});
+      required this.text,
+      required this.isFlipped,
+      required this.animated,
+      required this.didAnimate});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        TweenAnimationBuilder(
-          duration: Duration(milliseconds: animated ? constants.doorAnimationDuration : 0),
-          curve: Curves.easeInOutSine,
-          tween: Tween<double>(
-              begin: isFlipped ? constants.doorEndAngle : constants.doorStartAngle,
-              end: isFlipped ? constants.doorStartAngle : constants.doorEndAngle),
-          builder: (BuildContext context, double angle, Widget? child) {
-            final bool isMoreThanHalfOpen = angle >= constants.doorHalfOpenAngle;
-            return Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(angle),
-              alignment: Alignment.centerLeft,
-              child: ClipRect(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: 0.5,
-                    child: CalendarDoor(text: isMoreThanHalfOpen ? '' : text, isFront: !isMoreThanHalfOpen,),
-                  )),
-            );
-          },
-          child: null,
-          onEnd: () {
-            didAnimate();
-          },
+        CalendarHalfDoor(
+          text: text,
+          isFlipped: isFlipped,
+          animated: animated,
+          didAnimate: didAnimate,
+          isOnLeft: true,
         ),
         const SizedBox(
           width: constants.crackLength,
         ),
-        ClipRect(
-            child: Align(
-              alignment: Alignment.centerRight,
-              widthFactor: 0.5,
-              child: CalendarDoor(
-                text: text,
-                isFront: true,
-              ),
-            )),
+        CalendarHalfDoor(
+          text: text,
+          isFlipped: isFlipped,
+          animated: animated,
+          didAnimate: null,
+          isOnLeft: false,
+        ),
       ],
+    );
+  }
+}
+
+class CalendarHalfDoor extends StatelessWidget {
+  String text;
+  final bool isFlipped;
+  final bool animated;
+  final Function? didAnimate;
+  final bool isOnLeft;
+
+  CalendarHalfDoor(
+      {super.key,
+      required this.text,
+      required this.isFlipped,
+      required this.animated,
+      required this.didAnimate,
+      required this.isOnLeft});
+
+  @override
+  Widget build(BuildContext context) {
+    final double endAngle = constants.doorEndAngle * (isOnLeft ? 1 : -1);
+
+    return TweenAnimationBuilder(
+      duration: Duration(
+          milliseconds: animated ? constants.doorAnimationDuration : 0),
+      curve: Curves.easeInOutSine,
+      tween: Tween<double>(
+          begin: isFlipped ? endAngle : constants.doorStartAngle,
+          end: isFlipped ? constants.doorStartAngle : endAngle),
+      builder: (BuildContext context, double angle, Widget? child) {
+        final bool isMoreThanHalfOpen;
+        if (isOnLeft) {
+          isMoreThanHalfOpen = angle >= constants.doorHalfOpenAngle;
+        } else {
+          isMoreThanHalfOpen = angle <= constants.doorHalfOpenAngle * -1;
+        }
+
+        return Transform(
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateY(angle),
+          alignment: isOnLeft ? Alignment.centerLeft : Alignment.centerRight,
+          child: ClipRect(
+              child: Align(
+            alignment: isOnLeft ? Alignment.centerLeft : Alignment.centerRight,
+            widthFactor: 0.5,
+            child: CalendarDoor(
+              text: isMoreThanHalfOpen ? '' : text,
+              isFront: !isMoreThanHalfOpen,
+            ),
+          )),
+        );
+      },
+      child: null,
+      onEnd: () {
+        didAnimate?.call();
+      },
     );
   }
 }
