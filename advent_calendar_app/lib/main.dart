@@ -148,8 +148,6 @@ class ClippedSnowfall extends StatelessWidget {
   final bool isOpen;
   const ClippedSnowfall({super.key, required this.isOpen});
 
-  // TODO: adjust snowflake size (have to include lib and modify?)
-
   @override
   Widget build(BuildContext context) {
     final bool isOpening = !isOpen;
