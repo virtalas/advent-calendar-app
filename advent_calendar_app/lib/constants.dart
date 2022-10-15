@@ -15,3 +15,4 @@ const double doorStartAngle = 0;
 const double doorEndAngle = 2;
 const double doorHalfOpenAngle = 1.5708; // 90 degrees in radians
 const int doorAnimationDuration = 1000;
+const Curve doorAnimationCurve = Curves.easeInOutQuad;

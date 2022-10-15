@@ -57,7 +57,7 @@ class CalendarSingleDoor extends StatelessWidget {
           TweenAnimationBuilder(
             duration: Duration(
                 milliseconds: animated ? constants.doorAnimationDuration : 0),
-            curve: Curves.easeInOutSine,
+            curve: constants.doorAnimationCurve,
             tween: Tween<double>(
                 begin: isFlipped
                     ? constants.doorEndAngle
@@ -152,7 +152,7 @@ class CalendarHalfDoor extends StatelessWidget {
     return TweenAnimationBuilder(
       duration: Duration(
           milliseconds: animated ? constants.doorAnimationDuration : 0),
-      curve: Curves.easeInOutSine,
+      curve: constants.doorAnimationCurve,
       tween: Tween<double>(
           begin: isFlipped ? endAngle : constants.doorStartAngle,
           end: isFlipped ? constants.doorStartAngle : endAngle),

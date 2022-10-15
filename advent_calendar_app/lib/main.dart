@@ -120,9 +120,12 @@ class CalendarDoorContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget? snowfall;
-    if (!isOpen) {
-      snowfall = SizedBox(
+    return Container(
+      height: constants.doorHeight + constants.crackLength * 2,
+      decoration: const BoxDecoration(
+        color: Colors.orange,
+      ),
+      child: SizedBox(
         width: constants.doorHeight,
         height: constants.doorHeight,
         child: Stack(
@@ -131,16 +134,7 @@ class CalendarDoorContent extends StatelessWidget {
             Positioned.fill(child: child),
           ],
         ),
-      );
-    } else {
-      snowfall = child;
-    }
-    return Container(
-      height: constants.doorHeight + constants.crackLength * 2,
-      decoration: const BoxDecoration(
-        color: Colors.orange,
       ),
-      child: snowfall,
     );
   }
 }
@@ -149,14 +143,18 @@ class ClippedSnowfall extends StatelessWidget {
   final bool isOpen;
   const ClippedSnowfall({super.key, required this.isOpen});
 
-  // TODO: animate in/out with fade
   // TODO: adjust snowflake size (have to include lib and modify?)
 
   @override
   Widget build(BuildContext context) {
-    return const ClipRect(
-      child:
-          Snowflakes(numberOfSnowflakes: 15, color: Colors.white, alpha: 180),
+    return AnimatedOpacity(
+      opacity: isOpen ? 0 : 1,
+      duration: Duration(milliseconds: constants.doorAnimationDuration),
+      curve: isOpen ? Curves.easeInExpo : Curves.easeOutExpo,
+      child: const ClipRect(
+        child:
+        Snowflakes(numberOfSnowflakes: 8, color: Colors.white, alpha: 120),
+      ),
     );
   }
 }
