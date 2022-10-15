@@ -36,14 +36,14 @@ class CalendarDoor extends StatelessWidget {
 
 class CalendarSingleDoor extends StatelessWidget {
   String text;
-  final bool isFlipped;
+  final bool isOpen;
   final bool animated;
   final Function didAnimate;
 
   CalendarSingleDoor(
       {super.key,
       required this.text,
-      required this.isFlipped,
+      required this.isOpen,
       required this.animated,
       required this.didAnimate});
 
@@ -59,10 +59,10 @@ class CalendarSingleDoor extends StatelessWidget {
                 milliseconds: animated ? constants.doorAnimationDuration : 0),
             curve: constants.doorAnimationCurve,
             tween: Tween<double>(
-                begin: isFlipped
+                begin: isOpen
                     ? constants.doorEndAngle
                     : constants.doorStartAngle,
-                end: isFlipped
+                end: isOpen
                     ? constants.doorStartAngle
                     : constants.doorEndAngle),
             builder: (BuildContext context, double angle, Widget? child) {
@@ -92,14 +92,14 @@ class CalendarSingleDoor extends StatelessWidget {
 
 class CalendarDoubleDoor extends StatelessWidget {
   String text;
-  final bool isFlipped;
+  final bool isOpen;
   final bool animated;
   final Function didAnimate;
 
   CalendarDoubleDoor(
       {super.key,
       required this.text,
-      required this.isFlipped,
+      required this.isOpen,
       required this.animated,
       required this.didAnimate});
 
@@ -110,7 +110,7 @@ class CalendarDoubleDoor extends StatelessWidget {
       children: [
         CalendarHalfDoor(
           text: text,
-          isFlipped: isFlipped,
+          isOpen: isOpen,
           animated: animated,
           didAnimate: didAnimate,
           isOnLeft: true,
@@ -120,7 +120,7 @@ class CalendarDoubleDoor extends StatelessWidget {
         ),
         CalendarHalfDoor(
           text: text,
-          isFlipped: isFlipped,
+          isOpen: isOpen,
           animated: animated,
           didAnimate: null,
           isOnLeft: false,
@@ -132,7 +132,7 @@ class CalendarDoubleDoor extends StatelessWidget {
 
 class CalendarHalfDoor extends StatelessWidget {
   String text;
-  final bool isFlipped;
+  final bool isOpen;
   final bool animated;
   final Function? didAnimate;
   final bool isOnLeft;
@@ -140,7 +140,7 @@ class CalendarHalfDoor extends StatelessWidget {
   CalendarHalfDoor(
       {super.key,
       required this.text,
-      required this.isFlipped,
+      required this.isOpen,
       required this.animated,
       required this.didAnimate,
       required this.isOnLeft});
@@ -154,8 +154,8 @@ class CalendarHalfDoor extends StatelessWidget {
           milliseconds: animated ? constants.doorAnimationDuration : 0),
       curve: constants.doorAnimationCurve,
       tween: Tween<double>(
-          begin: isFlipped ? endAngle : constants.doorStartAngle,
-          end: isFlipped ? constants.doorStartAngle : endAngle),
+          begin: isOpen ? endAngle : constants.doorStartAngle,
+          end: isOpen ? constants.doorStartAngle : endAngle),
       builder: (BuildContext context, double angle, Widget? child) {
         final bool isMoreThanHalfOpen;
         if (isOnLeft) {

@@ -31,6 +31,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
           padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 0),
           itemCount: days.length,
           itemBuilder: (BuildContext context, int index) {
+            // Use InkWell (without splash or highlight) instead of GestureRecognizer
+            // to recognize taps when CalendarRow door is open.
             return InkWell(
               splashFactory: NoSplash.splashFactory,
               highlightColor: Colors.transparent,
@@ -61,6 +63,9 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
     });
   }
 
+  // Hack used together with _needsAnimating to only animate doors on user tap.
+  // Otherwise they animate also when scrolling back into view, and ListView rebuilds them.
+  // Maybe a value listener could also work?
   void didAnimate(int index) {
     setState(() {
       _needsAnimating[index] = false;
@@ -88,7 +93,7 @@ class CalendarRow extends StatelessWidget {
 
     if ((day % 3 == 0 && day % 2 == 0) || day % 5 == 0) {
       doorWidget = CalendarDoubleDoor(
-        isFlipped: isOpen,
+        isOpen: isOpen,
         text: text,
         animated: animated,
         didAnimate: didAnimate,
@@ -96,7 +101,7 @@ class CalendarRow extends StatelessWidget {
     } else {
       doorWidget = CalendarSingleDoor(
           text: text,
-          isFlipped: isOpen,
+          isOpen: isOpen,
           animated: animated,
           didAnimate: didAnimate);
     }
@@ -125,7 +130,7 @@ class CalendarDoorContent extends StatelessWidget {
       decoration: const BoxDecoration(
         color: Colors.orange,
       ),
-      child: SizedBox(
+      child: SizedBox( // For some reason this SizedBox is needed to display the Stack.
         width: constants.doorHeight,
         height: constants.doorHeight,
         child: Stack(
@@ -147,10 +152,12 @@ class ClippedSnowfall extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isOpening = !isOpen;
+
     return AnimatedOpacity(
-      opacity: isOpen ? 0 : 1,
-      duration: Duration(milliseconds: constants.doorAnimationDuration),
-      curve: isOpen ? Curves.easeInExpo : Curves.easeOutExpo,
+      opacity: isOpening ? 1 : 0,
+      duration: const Duration(milliseconds: constants.doorAnimationDuration),
+      curve: isOpening ? Curves.easeOutExpo : Curves.easeInExpo,
       child: const ClipRect(
         child:
         Snowflakes(numberOfSnowflakes: 8, color: Colors.white, alpha: 120),
