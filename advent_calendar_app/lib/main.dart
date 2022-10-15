@@ -79,12 +79,13 @@ class CalendarRow extends StatelessWidget {
   final bool animated;
   final Function didAnimate;
 
-  const CalendarRow(
-      {super.key,
-      required this.day,
-      required this.isOpen,
-      required this.animated,
-      required this.didAnimate});
+  const CalendarRow({
+    super.key,
+    required this.day,
+    required this.isOpen,
+    required this.animated,
+    required this.didAnimate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +101,11 @@ class CalendarRow extends StatelessWidget {
       );
     } else {
       doorWidget = CalendarSingleDoor(
-          text: text,
-          isOpen: isOpen,
-          animated: animated,
-          didAnimate: didAnimate);
+        text: text,
+        isOpen: isOpen,
+        animated: animated,
+        didAnimate: didAnimate,
+      );
     }
 
     return Row(
@@ -125,12 +127,18 @@ class CalendarDoorContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final Widget image = SizedBox(
       height: constants.doorHeight + constants.crackLength * 2,
-      decoration: const BoxDecoration(
-        color: Colors.orange,
+      width: constants.doorHeight,
+      child: Image.asset(
+        'assets/default.jpeg',
+        fit: BoxFit.fill,
       ),
-      child: SizedBox( // For some reason this SizedBox is needed to display the Stack.
+    );
+
+    final Widget snowfallAndDoors = Center(
+      // For some reason this SizedBox is needed to display the Stack.
+      child: SizedBox(
         width: constants.doorHeight,
         height: constants.doorHeight,
         child: Stack(
@@ -139,6 +147,19 @@ class CalendarDoorContent extends StatelessWidget {
             Positioned.fill(child: child),
           ],
         ),
+      ),
+    );
+
+    return Container(
+      height: constants.doorHeight + constants.crackLength * 2,
+      decoration: const BoxDecoration(
+        color: Colors.orange,
+      ),
+      child: Stack(
+        children: [
+          image,
+          snowfallAndDoors,
+        ],
       ),
     );
   }
@@ -158,7 +179,7 @@ class ClippedSnowfall extends StatelessWidget {
       curve: isOpening ? Curves.easeOutExpo : Curves.easeInExpo,
       child: const ClipRect(
         child:
-        Snowflakes(numberOfSnowflakes: 8, color: Colors.white, alpha: 120),
+            Snowflakes(numberOfSnowflakes: 8, color: Colors.white, alpha: 120),
       ),
     );
   }

@@ -40,12 +40,13 @@ class CalendarSingleDoor extends StatelessWidget {
   final bool animated;
   final Function didAnimate;
 
-  CalendarSingleDoor(
-      {super.key,
-      required this.text,
-      required this.isOpen,
-      required this.animated,
-      required this.didAnimate});
+  CalendarSingleDoor({
+    super.key,
+    required this.text,
+    required this.isOpen,
+    required this.animated,
+    required this.didAnimate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +60,9 @@ class CalendarSingleDoor extends StatelessWidget {
                 milliseconds: animated ? constants.doorAnimationDuration : 0),
             curve: constants.doorAnimationCurve,
             tween: Tween<double>(
-                begin: isOpen
-                    ? constants.doorEndAngle
-                    : constants.doorStartAngle,
-                end: isOpen
-                    ? constants.doorStartAngle
-                    : constants.doorEndAngle),
+              begin: isOpen ? constants.doorEndAngle : constants.doorStartAngle,
+              end: isOpen ? constants.doorStartAngle : constants.doorEndAngle,
+            ),
             builder: (BuildContext context, double angle, Widget? child) {
               final bool isMoreThanHalfOpen =
                   angle >= constants.doorHalfOpenAngle;
@@ -83,7 +81,7 @@ class CalendarSingleDoor extends StatelessWidget {
             onEnd: () {
               didAnimate();
             },
-          )
+          ),
         ],
       ),
     );
@@ -96,12 +94,13 @@ class CalendarDoubleDoor extends StatelessWidget {
   final bool animated;
   final Function didAnimate;
 
-  CalendarDoubleDoor(
-      {super.key,
-      required this.text,
-      required this.isOpen,
-      required this.animated,
-      required this.didAnimate});
+  CalendarDoubleDoor({
+    super.key,
+    required this.text,
+    required this.isOpen,
+    required this.animated,
+    required this.didAnimate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -137,13 +136,14 @@ class CalendarHalfDoor extends StatelessWidget {
   final Function? didAnimate;
   final bool isOnLeft;
 
-  CalendarHalfDoor(
-      {super.key,
-      required this.text,
-      required this.isOpen,
-      required this.animated,
-      required this.didAnimate,
-      required this.isOnLeft});
+  CalendarHalfDoor({
+    super.key,
+    required this.text,
+    required this.isOpen,
+    required this.animated,
+    required this.didAnimate,
+    required this.isOnLeft,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +151,13 @@ class CalendarHalfDoor extends StatelessWidget {
 
     return TweenAnimationBuilder(
       duration: Duration(
-          milliseconds: animated ? constants.doorAnimationDuration : 0),
+        milliseconds: animated ? constants.doorAnimationDuration : 0,
+      ),
       curve: constants.doorAnimationCurve,
       tween: Tween<double>(
-          begin: isOpen ? endAngle : constants.doorStartAngle,
-          end: isOpen ? constants.doorStartAngle : endAngle),
+        begin: isOpen ? endAngle : constants.doorStartAngle,
+        end: isOpen ? constants.doorStartAngle : endAngle,
+      ),
       builder: (BuildContext context, double angle, Widget? child) {
         final bool isMoreThanHalfOpen;
         if (isOnLeft) {
@@ -170,14 +172,16 @@ class CalendarHalfDoor extends StatelessWidget {
             ..rotateY(angle),
           alignment: isOnLeft ? Alignment.centerLeft : Alignment.centerRight,
           child: ClipRect(
-              child: Align(
-            alignment: isOnLeft ? Alignment.centerLeft : Alignment.centerRight,
-            widthFactor: 0.5,
-            child: CalendarDoor(
-              text: isMoreThanHalfOpen ? '' : text,
-              isFront: !isMoreThanHalfOpen,
+            child: Align(
+              alignment:
+                  isOnLeft ? Alignment.centerLeft : Alignment.centerRight,
+              widthFactor: 0.5,
+              child: CalendarDoor(
+                text: isMoreThanHalfOpen ? '' : text,
+                isFront: !isMoreThanHalfOpen,
+              ),
             ),
-          )),
+          ),
         );
       },
       child: null,
