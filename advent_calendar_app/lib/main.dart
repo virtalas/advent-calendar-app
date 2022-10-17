@@ -128,7 +128,7 @@ class CalendarDoorContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget image = SizedBox(
-      height: constants.doorHeight + constants.crackLength * 2,
+      height: constants.doorHeight,
       width: constants.doorHeight,
       child: Image.asset(
         'assets/default.jpeg',
@@ -151,7 +151,7 @@ class CalendarDoorContent extends StatelessWidget {
     );
 
     return Container(
-      height: constants.doorHeight + constants.crackLength * 2,
+      height: constants.doorHeight,
       decoration: const BoxDecoration(
         color: Colors.orange,
       ),

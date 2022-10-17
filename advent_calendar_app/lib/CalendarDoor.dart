@@ -15,7 +15,7 @@ class CalendarDoor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: constants.doorHeight - constants.crackLength,
+      width: constants.doorHeight,
       height: constants.doorHeight,
       decoration: BoxDecoration(
         color: isFront ? constants.doorFrontColor : constants.doorBackColor,
@@ -166,6 +166,9 @@ class CalendarHalfDoor extends StatelessWidget {
           isMoreThanHalfOpen = angle <= constants.doorHalfOpenAngle * -1;
         }
 
+        const double halfDoorWidth = (constants.doorHeight / 2) - (constants.crackLength / 2);
+        const double widthFactor = halfDoorWidth / constants.doorHeight;
+
         return Transform(
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.001)
@@ -175,7 +178,7 @@ class CalendarHalfDoor extends StatelessWidget {
             child: Align(
               alignment:
                   isOnLeft ? Alignment.centerLeft : Alignment.centerRight,
-              widthFactor: 0.5,
+              widthFactor: widthFactor,
               child: CalendarDoor(
                 text: isMoreThanHalfOpen ? '' : text,
                 isFront: !isMoreThanHalfOpen,
