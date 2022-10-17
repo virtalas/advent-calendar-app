@@ -63,14 +63,26 @@ class ClippedSnowfall extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isOpening = !isOpen;
 
-    return AnimatedOpacity(
-      opacity: isOpening ? 1 : 0,
+    return TweenAnimationBuilder(
       duration: const Duration(milliseconds: constants.doorAnimationDuration),
       curve: constants.doorAnimationCurve,
-      child: const ClipRect(
-        child:
-            Snowflakes(numberOfSnowflakes: 8, color: Colors.white, alpha: 120),
+      tween: Tween<double>(
+        begin: isOpen ? 1 : 0,
+        end: isOpen ? 0 : 1,
       ),
+      builder: (BuildContext context, double opacity, Widget? child) {
+        if (opacity > 0.1) {
+          return const ClipRect(
+            child: Snowflakes(
+              numberOfSnowflakes: 8,
+              color: Colors.white,
+              alpha: 120,
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 }

@@ -166,7 +166,8 @@ class CalendarHalfDoor extends StatelessWidget {
           isMoreThanHalfOpen = angle <= constants.doorHalfOpenAngle * -1;
         }
 
-        const double halfDoorWidth = (constants.doorHeight / 2) - (constants.crackLength / 2);
+        const double halfDoorWidth =
+            (constants.doorHeight / 2) - (constants.crackLength / 2);
         const double widthFactor = halfDoorWidth / constants.doorHeight;
 
         return Transform(
