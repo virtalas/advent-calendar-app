@@ -14,9 +14,10 @@ class CalendarDoorContent extends StatelessWidget {
       width: constants.doorHeight,
       child: ClipRect(
         child: AnimatedScale(
-          scale: isOpen ? 1 : 1.2,
-          curve: isOpen ? Curves.easeInSine : Curves.easeInOut,
-          duration: const Duration(milliseconds: constants.doorAnimationDuration),
+          scale: isOpen ? 1 : 1.1,
+          curve: Curves.easeInOutSine,
+          duration:
+              const Duration(milliseconds: constants.doorAnimationDuration),
           child: Image.asset(
             'assets/default.jpeg',
             fit: BoxFit.fill,
@@ -65,10 +66,10 @@ class ClippedSnowfall extends StatelessWidget {
     return AnimatedOpacity(
       opacity: isOpening ? 1 : 0,
       duration: const Duration(milliseconds: constants.doorAnimationDuration),
-      curve: isOpening ? Curves.easeOutExpo : Curves.easeInExpo,
+      curve: constants.doorAnimationCurve,
       child: const ClipRect(
         child:
-        Snowflakes(numberOfSnowflakes: 8, color: Colors.white, alpha: 120),
+            Snowflakes(numberOfSnowflakes: 8, color: Colors.white, alpha: 120),
       ),
     );
   }
