@@ -1,3 +1,4 @@
+import 'package:advent_calendar_app/utils.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart' as constants;
@@ -72,17 +73,10 @@ class ClippedSnowfall extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isOpening = !isOpen;
-
-    return TweenAnimationBuilder(
-      duration: const Duration(milliseconds: constants.doorAnimationDuration),
-      curve: constants.doorAnimationCurve,
-      tween: Tween<double>(
-        begin: isOpen ? 1 : 0,
-        end: isOpen ? 0 : 1,
-      ),
-      builder: (BuildContext context, double opacity, Widget? child) {
-        if (opacity > 0.1) {
+    return DoorOpeningProgressAnimationBuilder(
+      isOpen: isOpen,
+      builder: (BuildContext context, double progress, Widget? child) {
+        if (progress > 0.1) {
           return const ClipRect(
             child: Snowflakes(
               numberOfSnowflakes: 8,
@@ -106,15 +100,10 @@ class AnimatedText extends StatelessWidget {
   Widget build(BuildContext context) {
     const Duration duration = Duration(milliseconds: 170);
 
-    return TweenAnimationBuilder(
-      duration: const Duration(milliseconds: constants.doorAnimationDuration),
-      curve: constants.doorAnimationCurve,
-      tween: Tween<double>(
-        begin: isOpen ? 1 : 0,
-        end: isOpen ? 0 : 1,
-      ),
-      builder: (BuildContext context, double opacity, Widget? child) {
-        if (opacity > 0.1) {
+    return DoorOpeningProgressAnimationBuilder(
+      isOpen: isOpen,
+      builder: (BuildContext context, double progress, Widget? child) {
+        if (progress > 0.1) {
           return SizedBox(
             width: 220,
             height: 70,
