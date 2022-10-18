@@ -1,3 +1,4 @@
+import 'package:advent_calendar_app/utils.dart';
 import 'package:flutter/material.dart';
 import 'CalendarDoor.dart';
 import 'CalendarDoorContent.dart';
@@ -15,13 +16,20 @@ class AdventCalendarApp extends StatefulWidget {
 }
 
 class _AdventCalendarAppState extends State<AdventCalendarApp> {
-  final List<bool> _openStates = <bool>[true, true, true, true];
-  final List<bool> _needsAnimating = <bool>[false, false, false, false];
+  static final DateTime finalDate = DateTime(2022, 10, 24); // December = 11
+  static const int doorCount = 24;
+
+  static final DateTime now = DateTime.now();
+  // static final DateTime now = DateTime(2022, 10, 25);
+  static final int currentDoorNumber = _currentDoorNumber(now, finalDate, doorCount);
+  static final List<int> days = [for (var i = currentDoorNumber; i >= 1; i--) i];
+  static final bool isLastDay = currentDoorNumber == doorCount;
+
+  final List<bool> _openStates = [for (var i = currentDoorNumber; i >= 1; i--) true]; // TODO: revert
+  final List<bool> _needsAnimating = [for (var i = currentDoorNumber; i >= 1; i--) false];
 
   @override
   Widget build(BuildContext context) {
-    final List<int> days = <int>[12, 11, 10, 9];
-
     // MediaQuery.of(context).size.width
 
     return MaterialApp(
@@ -42,6 +50,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
               child: CalendarRow(
                 day: days[index],
                 isOpen: _openStates[index],
+                isLastDoor: index == 0 && isLastDay,
                 animated: _needsAnimating[index],
                 didAnimate: () {
                   didAnimate(index);
@@ -54,6 +63,12 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
         ),
       ),
     );
+  }
+
+  static int _currentDoorNumber(DateTime now, DateTime finalDate, int doorCount) {
+    final int difference = daysBetween(now, finalDate);
+    final int daysLeft = difference.clamp(0, doorCount);
+    return doorCount - daysLeft;
   }
 
   void _toggleIsOpen(int index) {
@@ -76,6 +91,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
 class CalendarRow extends StatelessWidget {
   final int day;
   final bool isOpen;
+  final bool isLastDoor;
   final bool animated;
   final Function didAnimate;
 
@@ -83,6 +99,7 @@ class CalendarRow extends StatelessWidget {
     super.key,
     required this.day,
     required this.isOpen,
+    required this.isLastDoor,
     required this.animated,
     required this.didAnimate,
   });
@@ -113,6 +130,7 @@ class CalendarRow extends StatelessWidget {
       children: [
         CalendarDoorContent(
           isOpen: isOpen,
+          isLastDoor: isLastDoor,
           child: doorWidget,
         ),
       ],
