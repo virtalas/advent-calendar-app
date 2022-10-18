@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'CalendarDoor.dart';
 import 'CalendarDoorContent.dart';
 import 'constants.dart' as constants;
+import 'package:flutter/services.dart';
 
 void main() {
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const AdventCalendarApp());
 }
 
