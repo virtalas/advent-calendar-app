@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:advent_calendar_app/utils.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +8,21 @@ import 'package:snowfall/snowfall/snowflakes.dart';
 
 class CalendarDoorContent extends StatelessWidget {
   final bool isOpen;
-  final bool isLastDoor;
+  final int doorNumber;
+  final int maxDoorCount;
   final Widget child;
-  const CalendarDoorContent({super.key, required this.isOpen, required this.isLastDoor, required this.child});
+  const CalendarDoorContent({
+    super.key,
+    required this.isOpen,
+    required this.doorNumber,
+    required this.maxDoorCount,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bool isLastDoor = doorNumber == maxDoorCount;
+
     final Widget image = SizedBox(
       height: constants.doorHeight,
       width: constants.doorHeight,
@@ -44,7 +55,13 @@ class CalendarDoorContent extends StatelessWidget {
         height: constants.doorHeight,
         child: Stack(
           children: [
-            Positioned.fill(child: ClippedSnowfall(isOpen: isOpen)),
+            Positioned.fill(
+              child: ClippedSnowfall(
+                isOpen: isOpen,
+                doorNumber: doorNumber,
+                maxDoorCount: maxDoorCount,
+              ),
+            ),
             Positioned.fill(child: animatedText),
             Positioned.fill(child: child),
           ],
@@ -69,7 +86,14 @@ class CalendarDoorContent extends StatelessWidget {
 
 class ClippedSnowfall extends StatelessWidget {
   final bool isOpen;
-  const ClippedSnowfall({super.key, required this.isOpen});
+  final int doorNumber;
+  final int maxDoorCount;
+  const ClippedSnowfall({
+    super.key,
+    required this.isOpen,
+    required this.doorNumber,
+    required this.maxDoorCount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +101,9 @@ class ClippedSnowfall extends StatelessWidget {
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
         if (progress > 0.1) {
-          return const ClipRect(
+          return ClipRect(
             child: Snowflakes(
-              numberOfSnowflakes: 8,
+              numberOfSnowflakes: numberOfSnowflakes(doorNumber, maxDoorCount),
               color: Colors.white,
               alpha: 120,
             ),
@@ -89,6 +113,27 @@ class ClippedSnowfall extends StatelessWidget {
         }
       },
     );
+  }
+
+  int numberOfSnowflakes(int doorNumber, int maxDoorCount) {
+    if (maxDoorCount == 0) { return 0; }
+
+    final int numberOfDoorsWithSnowflakes = (maxDoorCount * 0.85).round();
+    const int maxNumberOfSnowflakes = 8;
+    final int borderNumber = maxDoorCount - numberOfDoorsWithSnowflakes;
+
+    if (doorNumber < borderNumber) {
+      return 0;
+    } else {
+      final int aboveBorder = doorNumber - borderNumber;
+      final int finalNumber = maxDoorCount - borderNumber;
+      final double percentage = aboveBorder / finalNumber;
+      return (maxNumberOfSnowflakes * _easeOutSine(percentage)).round();
+    }
+  }
+
+  double _easeOutSine(double x) {
+    return sin((x * 3.141) / 2);
   }
 }
 

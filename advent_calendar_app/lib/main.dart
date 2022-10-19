@@ -55,7 +55,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
               child: CalendarRow(
                 day: days[index],
                 isOpen: _openStates[index],
-                isLastDoor: index == 0 && isLastDay,
+                doorNumber: currentDoorNumber - index,
+                maxDoorCount: doorCount,
                 animated: _needsAnimating[index],
                 didAnimate: () {
                   didAnimate(index);
@@ -96,7 +97,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
 class CalendarRow extends StatelessWidget {
   final int day;
   final bool isOpen;
-  final bool isLastDoor;
+  final int doorNumber;
+  final int maxDoorCount;
   final bool animated;
   final Function didAnimate;
 
@@ -104,7 +106,8 @@ class CalendarRow extends StatelessWidget {
     super.key,
     required this.day,
     required this.isOpen,
-    required this.isLastDoor,
+    required this.doorNumber,
+    required this.maxDoorCount,
     required this.animated,
     required this.didAnimate,
   });
@@ -135,7 +138,8 @@ class CalendarRow extends StatelessWidget {
       children: [
         CalendarDoorContent(
           isOpen: isOpen,
-          isLastDoor: isLastDoor,
+          doorNumber: doorNumber,
+          maxDoorCount: maxDoorCount,
           child: doorWidget,
         ),
       ],
