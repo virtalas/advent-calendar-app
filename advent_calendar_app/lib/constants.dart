@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 // Colors
-const Color calendarRed = Colors.red;
-const Color doorFrontColor = Colors.red;
-const Color doorBackColor = Colors.redAccent;
+const Color calendarRed = Color(0xFFED240C);
+const Color doorFrontColor = calendarRed;
+const Color doorBackColor = Color(0xFFd01f0b);
 
 // Size
 const double doorHeight = 300;
