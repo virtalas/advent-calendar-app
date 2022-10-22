@@ -190,7 +190,9 @@ class CalendarHalfDoor extends StatelessWidget {
       },
       child: null,
       onEnd: () {
-        didAnimate?.call();
+        if (animated) {
+          didAnimate?.call();
+        }
       },
     );
   }

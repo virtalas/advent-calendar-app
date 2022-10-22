@@ -115,6 +115,7 @@ class ClippedSnowfall extends StatelessWidget {
     );
   }
 
+  // Public for testing
   int numberOfSnowflakes(int doorNumber, int maxDoorCount) {
     if (maxDoorCount == 0) { return 0; }
 
