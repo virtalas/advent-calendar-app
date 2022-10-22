@@ -6,6 +6,7 @@ import 'constants.dart' as constants;
 import 'package:flutter/services.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -22,7 +23,7 @@ class AdventCalendarApp extends StatefulWidget {
 
 class _AdventCalendarAppState extends State<AdventCalendarApp>
     with WidgetsBindingObserver {
-  static final DateTime finalDate = DateTime(2022, 10, 24); // December = 11
+  static final DateTime finalDate = DateTime(2022, 11, 24); // December = 11
   static const int doorCount = 24;
 
   int _currentDoorNumber = 0;
