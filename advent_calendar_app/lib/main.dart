@@ -29,8 +29,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
   int _currentDoorNumber = 0;
   List<int> _doorNumbers = [];
-  List<bool> _openStates = [];
-  List<bool> _needsAnimating = [];
+  final List<bool> _openStates = [for (var i = 0; i < doorCount; i++) true]; // TODO: revert
+  final List<bool> _needsAnimating = [for (var i = 0; i < doorCount; i++) false];
 
   @override
   initState() {
@@ -96,23 +96,25 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
               return Column(children: columnChildren);
             } else {
-              final int doorIndex = index - 1;
+              final int listDoorIndex = index - 1;
+              final int doorNumber = _currentDoorNumber - listDoorIndex;
+              final int doorNumberIndex = doorNumber - 1;
               // Use InkWell without splash or highlight instead of GestureRecognizer
               // to recognize taps when CalendarRow door is open.
               return InkWell(
                 splashFactory: NoSplash.splashFactory,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  _toggleIsOpen(doorIndex);
+                  _toggleIsOpen(doorNumberIndex);
                 },
                 child: CalendarRow(
-                  day: _doorNumbers[doorIndex],
-                  isOpen: _openStates[doorIndex],
-                  doorNumber: _currentDoorNumber - doorIndex,
+                  day: _doorNumbers[doorNumberIndex],
+                  isOpen: _openStates[doorNumberIndex],
+                  doorNumber: doorNumber,
                   maxDoorCount: doorCount,
-                  animated: _needsAnimating[doorIndex],
+                  animated: _needsAnimating[doorNumberIndex],
                   didAnimate: () {
-                    didAnimate(doorIndex);
+                    didAnimate(doorNumberIndex);
                   },
                 ),
               );
@@ -127,36 +129,16 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
   void _updateCurrentDoor() {
     // final DateTime now = DateTime.now();
-    final DateTime now = DateTime(2022, DateTime.december, 1); // Use for testing
+    final DateTime now = DateTime(2022, DateTime.december, 11); // Use for testing
     final int currentDoorNumber =
         _calculateCurrentDoorNumber(now, finalDate, doorCount);
     final List<int> doorNumbers = [
-      for (var i = currentDoorNumber; i >= 1; i--) i
+      for (var i = 1; i <= currentDoorNumber; i++) i
     ];
 
     setState(() {
       _currentDoorNumber = currentDoorNumber;
       _doorNumbers = doorNumbers;
-
-      if (_openStates.length < doorNumbers.length) {
-        for (var i = _openStates.length; i < doorNumbers.length; i++) {
-          _openStates.add(true); // TODO: revert
-        }
-      } else if (_openStates.length > doorNumbers.length) {
-        // Should never happen
-        _openStates = [
-          for (var i = currentDoorNumber; i >= 1; i--) true
-        ]; // TODO: revert
-      }
-
-      if (_needsAnimating.length < doorNumbers.length) {
-        for (var i = _needsAnimating.length; i < doorNumbers.length; i++) {
-          _needsAnimating.add(false);
-        }
-      } else if (_needsAnimating.length > doorNumbers.length) {
-        // Should never happen
-        _needsAnimating = [for (var i = currentDoorNumber; i >= 1; i--) false];
-      }
     });
   }
 
@@ -175,7 +157,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   // Hack used together with _needsAnimating to only animate doors on user tap.
-  // Otherwise they animate also when scrolling back into view, and ListView rebuilds them.
+  // Otherwise they animate also when scrolling back into view and ListView rebuilds them.
   // Maybe a value listener could also work?
   void didAnimate(int index) {
     setState(() {
