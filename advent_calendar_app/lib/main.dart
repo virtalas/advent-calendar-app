@@ -20,7 +20,8 @@ class AdventCalendarApp extends StatefulWidget {
   State<AdventCalendarApp> createState() => _AdventCalendarAppState();
 }
 
-class _AdventCalendarAppState extends State<AdventCalendarApp> with WidgetsBindingObserver {
+class _AdventCalendarAppState extends State<AdventCalendarApp>
+    with WidgetsBindingObserver {
   static final DateTime finalDate = DateTime(2022, 10, 24); // December = 11
   static const int doorCount = 24;
 
@@ -61,27 +62,37 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> with WidgetsBindi
         backgroundColor: constants.calendarRed,
         body: ListView.separated(
           padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 0),
-          itemCount: _doorNumbers.length,
+          itemCount: _doorNumbers.length + 1,
           itemBuilder: (BuildContext context, int index) {
-            // Use InkWell (without splash or highlight) instead of GestureRecognizer
-            // to recognize taps when CalendarRow door is open.
-            return InkWell(
-              splashFactory: NoSplash.splashFactory,
-              highlightColor: Colors.transparent,
-              onTap: () {
-                _toggleIsOpen(index);
-              },
-              child: CalendarRow(
-                day: _doorNumbers[index],
-                isOpen: _openStates[index],
-                doorNumber: _currentDoorNumber - index,
-                maxDoorCount: doorCount,
-                animated: _needsAnimating[index],
-                didAnimate: () {
-                  didAnimate(index);
+            if (index == 0) {
+              return const Center(
+                child: Text(
+                  'Joulukalenteri 2022',
+                  style: TextStyle(color: Colors.white, fontSize: 30),
+                ),
+              );
+            } else {
+              final int doorIndex = index - 1;
+              // Use InkWell without splash or highlight instead of GestureRecognizer
+              // to recognize taps when CalendarRow door is open.
+              return InkWell(
+                splashFactory: NoSplash.splashFactory,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  _toggleIsOpen(doorIndex);
                 },
-              ),
-            );
+                child: CalendarRow(
+                  day: _doorNumbers[doorIndex],
+                  isOpen: _openStates[doorIndex],
+                  doorNumber: _currentDoorNumber - doorIndex,
+                  maxDoorCount: doorCount,
+                  animated: _needsAnimating[doorIndex],
+                  didAnimate: () {
+                    didAnimate(doorIndex);
+                  },
+                ),
+              );
+            }
           },
           separatorBuilder: (BuildContext context, int index) =>
               const SizedBox(height: 64),
@@ -93,8 +104,11 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> with WidgetsBindi
   void _updateCurrentDoor() {
     final DateTime now = DateTime.now();
     // final DateTime now = DateTime(2022, 10, 25); // Change for testing
-    final int currentDoorNumber = _calculateCurrentDoorNumber(now, finalDate, doorCount);
-    final List<int> doorNumbers = [for (var i = currentDoorNumber; i >= 1; i--) i];
+    final int currentDoorNumber =
+        _calculateCurrentDoorNumber(now, finalDate, doorCount);
+    final List<int> doorNumbers = [
+      for (var i = currentDoorNumber; i >= 1; i--) i
+    ];
     final bool isLastDay = currentDoorNumber == doorCount;
 
     setState(() {
@@ -112,7 +126,9 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> with WidgetsBindi
         }
       } else if (_openStates.length > doorNumbers.length) {
         // Should never happen
-        _openStates = [for (var i = currentDoorNumber; i >= 1; i--) true]; // TODO: revert
+        _openStates = [
+          for (var i = currentDoorNumber; i >= 1; i--) true
+        ]; // TODO: revert
       }
 
       if (_needsAnimating.length < doorNumbers.length) {
@@ -126,7 +142,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> with WidgetsBindi
     });
   }
 
-  int _calculateCurrentDoorNumber(DateTime now, DateTime finalDate, int doorCount) {
+  int _calculateCurrentDoorNumber(
+      DateTime now, DateTime finalDate, int doorCount) {
     final int difference = daysBetween(now, finalDate);
     final int daysLeft = difference.clamp(0, doorCount);
     return doorCount - daysLeft;
