@@ -23,7 +23,8 @@ class AdventCalendarApp extends StatefulWidget {
 
 class _AdventCalendarAppState extends State<AdventCalendarApp>
     with WidgetsBindingObserver {
-  static final DateTime finalDate = DateTime(2022, 11, 24); // December = 11
+  static final DateTime finalDate = DateTime(2022, DateTime.december, 24);
+  static final DateTime firstDate = DateTime(finalDate.year, finalDate.month, 1);
   static const int doorCount = 24;
 
   int _currentDoorNumber = 0;
@@ -66,12 +67,34 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
           itemCount: _doorNumbers.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
-              return const Center(
-                child: Text(
-                  'Joulukalenteri 2022',
-                  style: TextStyle(color: Colors.white, fontSize: 30),
-                ),
+              final DateTime now = DateTime.now();
+              // final DateTime now = DateTime(2022, DateTime.november, 30); // Use for testing
+              final int daysLeft = daysBetween(now, firstDate);
+              const Widget title = Text(
+                'Joulukalenteri 2022',
+                style: TextStyle(color: Colors.white, fontSize: 30),
               );
+
+              final List<Widget> columnChildren;
+              if (_currentDoorNumber == 0) {
+                columnChildren = [
+                  title,
+                  const SizedBox(height: 50),
+                  const Text(
+                    'Ensimmäiseen luukkuun vielä',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '$daysLeft päivää...',
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ];
+              } else {
+                columnChildren = [title];
+              }
+
+              return Column(children: columnChildren);
             } else {
               final int doorIndex = index - 1;
               // Use InkWell without splash or highlight instead of GestureRecognizer
@@ -103,23 +126,17 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   void _updateCurrentDoor() {
-    final DateTime now = DateTime.now();
-    // final DateTime now = DateTime(2022, 10, 25); // Change for testing
+    // final DateTime now = DateTime.now();
+    final DateTime now = DateTime(2022, DateTime.december, 1); // Use for testing
     final int currentDoorNumber =
         _calculateCurrentDoorNumber(now, finalDate, doorCount);
     final List<int> doorNumbers = [
       for (var i = currentDoorNumber; i >= 1; i--) i
     ];
-    final bool isLastDay = currentDoorNumber == doorCount;
 
     setState(() {
-      if (_currentDoorNumber != currentDoorNumber) {
-        _currentDoorNumber = currentDoorNumber;
-      }
-
-      if (_doorNumbers != doorNumbers) {
-        _doorNumbers = doorNumbers;
-      }
+      _currentDoorNumber = currentDoorNumber;
+      _doorNumbers = doorNumbers;
 
       if (_openStates.length < doorNumbers.length) {
         for (var i = _openStates.length; i < doorNumbers.length; i++) {
