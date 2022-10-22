@@ -20,18 +20,37 @@ class AdventCalendarApp extends StatefulWidget {
   State<AdventCalendarApp> createState() => _AdventCalendarAppState();
 }
 
-class _AdventCalendarAppState extends State<AdventCalendarApp> {
+class _AdventCalendarAppState extends State<AdventCalendarApp> with WidgetsBindingObserver {
   static final DateTime finalDate = DateTime(2022, 10, 24); // December = 11
   static const int doorCount = 24;
 
-  static final DateTime now = DateTime.now();
-  // static final DateTime now = DateTime(2022, 10, 25);
-  static final int currentDoorNumber = _currentDoorNumber(now, finalDate, doorCount);
-  static final List<int> days = [for (var i = currentDoorNumber; i >= 1; i--) i];
-  static final bool isLastDay = currentDoorNumber == doorCount;
+  int _currentDoorNumber = 0;
+  List<int> _doorNumbers = [];
+  List<bool> _openStates = [];
+  List<bool> _needsAnimating = [];
 
-  final List<bool> _openStates = [for (var i = currentDoorNumber; i >= 1; i--) true]; // TODO: revert
-  final List<bool> _needsAnimating = [for (var i = currentDoorNumber; i >= 1; i--) false];
+  @override
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    _updateCurrentDoor();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      _updateCurrentDoor();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +61,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
         backgroundColor: constants.calendarRed,
         body: ListView.separated(
           padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 0),
-          itemCount: days.length,
+          itemCount: _doorNumbers.length,
           itemBuilder: (BuildContext context, int index) {
             // Use InkWell (without splash or highlight) instead of GestureRecognizer
             // to recognize taps when CalendarRow door is open.
@@ -53,9 +72,9 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
                 _toggleIsOpen(index);
               },
               child: CalendarRow(
-                day: days[index],
+                day: _doorNumbers[index],
                 isOpen: _openStates[index],
-                doorNumber: currentDoorNumber - index,
+                doorNumber: _currentDoorNumber - index,
                 maxDoorCount: doorCount,
                 animated: _needsAnimating[index],
                 didAnimate: () {
@@ -71,7 +90,43 @@ class _AdventCalendarAppState extends State<AdventCalendarApp> {
     );
   }
 
-  static int _currentDoorNumber(DateTime now, DateTime finalDate, int doorCount) {
+  void _updateCurrentDoor() {
+    final DateTime now = DateTime.now();
+    // final DateTime now = DateTime(2022, 10, 25); // Change for testing
+    final int currentDoorNumber = _calculateCurrentDoorNumber(now, finalDate, doorCount);
+    final List<int> doorNumbers = [for (var i = currentDoorNumber; i >= 1; i--) i];
+    final bool isLastDay = currentDoorNumber == doorCount;
+
+    setState(() {
+      if (_currentDoorNumber != currentDoorNumber) {
+        _currentDoorNumber = currentDoorNumber;
+      }
+
+      if (_doorNumbers != doorNumbers) {
+        _doorNumbers = doorNumbers;
+      }
+
+      if (_openStates.length < doorNumbers.length) {
+        for (var i = _openStates.length; i < doorNumbers.length; i++) {
+          _openStates.add(true); // TODO: revert
+        }
+      } else if (_openStates.length > doorNumbers.length) {
+        // Should never happen
+        _openStates = [for (var i = currentDoorNumber; i >= 1; i--) true]; // TODO: revert
+      }
+
+      if (_needsAnimating.length < doorNumbers.length) {
+        for (var i = _needsAnimating.length; i < doorNumbers.length; i++) {
+          _needsAnimating.add(false);
+        }
+      } else if (_needsAnimating.length > doorNumbers.length) {
+        // Should never happen
+        _needsAnimating = [for (var i = currentDoorNumber; i >= 1; i--) false];
+      }
+    });
+  }
+
+  int _calculateCurrentDoorNumber(DateTime now, DateTime finalDate, int doorCount) {
     final int difference = daysBetween(now, finalDate);
     final int daysLeft = difference.clamp(0, doorCount);
     return doorCount - daysLeft;
