@@ -27,7 +27,7 @@ class CalendarDoor extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           text,
-          style: const TextStyle(fontSize: 30, color: Colors.white),
+          style: const TextStyle(fontSize: 65, color: Colors.white, fontFamily: 'caveatBrush'),
         ),
       ),
     );

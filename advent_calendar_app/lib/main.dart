@@ -72,7 +72,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
               final int daysLeft = daysBetween(now, firstDate);
               const Widget title = Text(
                 'Joulukalenteri 2022',
-                style: TextStyle(color: Colors.white, fontSize: 30),
+                style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: 'caveatBrush'),
               );
 
               final List<Widget> columnChildren;
@@ -82,12 +82,12 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
                   const SizedBox(height: 50),
                   const Text(
                     'Ensimmäiseen luukkuun vielä',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(color: Colors.white, fontSize: 22, fontFamily: 'caveatBrush'),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '$daysLeft päivää...',
-                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                    style: const TextStyle(color: Colors.white, fontSize: 22, fontFamily: 'caveatBrush'),
                   ),
                 ];
               } else {
@@ -186,7 +186,7 @@ class CalendarRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String text = '$day. luukku';
+    final String text = '$day';
     Widget doorWidget;
 
     if ((day % 3 == 0 && day % 2 == 0) || day % 5 == 0) {

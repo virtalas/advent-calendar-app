@@ -100,3 +100,6 @@ flutter:
     - family: greatVibes
       fonts:
         - asset: assets/fonts/GreatVibes-Regular.ttf
+    - family: caveatBrush
+      fonts:
+        - asset: assets/fonts/CaveatBrush-Regular.ttf
