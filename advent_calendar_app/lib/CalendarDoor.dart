@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart' as constants;
 
@@ -79,7 +80,9 @@ class CalendarSingleDoor extends StatelessWidget {
             },
             child: null,
             onEnd: () {
-              didAnimate();
+              if (animated) {
+                didAnimate();
+              }
             },
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:advent_calendar_app/utils.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'CalendarDoor.dart';
 import 'CalendarDoorContent.dart';
@@ -26,6 +27,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   static final DateTime finalDate = DateTime(2022, DateTime.december, 24);
   static final DateTime firstDate = DateTime(finalDate.year, finalDate.month, 1);
   static const int doorCount = 24;
+
+  static final AudioPlayer doorSoundPlayer = AudioPlayer();
 
   int _currentDoorNumber = 0;
   List<int> _doorNumbers = [];
@@ -150,6 +153,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   void _toggleIsOpen(int index) {
+    doorSoundPlayer.stop();
+    doorSoundPlayer.play(AssetSource('audio/door.m4a'), mode: PlayerMode.lowLatency);
     setState(() {
       _openStates[index] = !_openStates[index];
       _needsAnimating[index] = true;
