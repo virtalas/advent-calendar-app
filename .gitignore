@@ -20,4 +20,4 @@ doc/api/
 *.js.deps
 *.js.map
 
-assets/
+assets/images/doors/
