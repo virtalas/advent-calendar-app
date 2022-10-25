@@ -1,5 +1,6 @@
+import 'dart:collection';
 import 'package:advent_calendar_app/utils.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
 import 'CalendarDoor.dart';
 import 'CalendarDoorContent.dart';
@@ -34,6 +35,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   List<int> _doorNumbers = [];
   final List<bool> _openStates = [for (var i = 0; i < doorCount; i++) true]; // TODO: revert
   final List<bool> _needsAnimating = [for (var i = 0; i < doorCount; i++) false];
+  final Map<int, AudioPlayer> _doorAudioPlayers = HashMap();
 
   @override
   initState() {
@@ -153,9 +155,17 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   void _toggleIsOpen(int index) {
-    doorSoundPlayer.stop();
-    doorSoundPlayer.play(AssetSource('audio/door.m4a'), mode: PlayerMode.lowLatency);
+    _doorAudioPlayers[index]?.stop();
+    _doorAudioPlayers[index]?.dispose();
+
+    final player = AudioPlayer();
+    player.setAsset('assets/audio/door1_short.m4a');
+    player.play();
+
+    HapticFeedback.lightImpact();
+
     setState(() {
+      _doorAudioPlayers[index] = player;
       _openStates[index] = !_openStates[index];
       _needsAnimating[index] = true;
     });
