@@ -144,7 +144,7 @@ class AnimatedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Duration duration = Duration(milliseconds: 170);
+    const Duration duration = Duration(milliseconds: 210);
 
     return DoorOpeningProgressAnimationBuilder(
       isOpen: isOpen,

@@ -1,11 +1,5 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart' as constants;
-
-// enum DoorType {
-//   single,
-//   double
-// }
 
 class CalendarDoor extends StatelessWidget {
   final String text;

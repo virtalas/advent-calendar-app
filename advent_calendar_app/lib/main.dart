@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:collection';
+import 'dart:math';
 import 'package:advent_calendar_app/utils.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +31,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   static final DateTime firstDate = DateTime(finalDate.year, finalDate.month, 1);
   static const int doorCount = 24;
 
-  static final AudioPlayer doorSoundPlayer = AudioPlayer();
+  static final AudioPlayer musicPlayer = AudioPlayer();
 
   int _currentDoorNumber = 0;
   List<int> _doorNumbers = [];
@@ -87,12 +89,12 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
                   const SizedBox(height: 50),
                   const Text(
                     'Ensimmäiseen luukkuun vielä',
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontFamily: 'caveatBrush'),
+                    style: TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'caveatBrush'),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '$daysLeft päivää...',
-                    style: const TextStyle(color: Colors.white, fontSize: 22, fontFamily: 'caveatBrush'),
+                    style: const TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'caveatBrush'),
                   ),
                 ];
               } else {
@@ -134,7 +136,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
   void _updateCurrentDoor() {
     // final DateTime now = DateTime.now();
-    final DateTime now = DateTime(2022, DateTime.december, 11); // Use for testing
+    final DateTime now = DateTime(2022, DateTime.december, 24); // Use for testing
     final int currentDoorNumber =
         _calculateCurrentDoorNumber(now, finalDate, doorCount);
     final List<int> doorNumbers = [
@@ -164,6 +166,12 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
     HapticFeedback.lightImpact();
 
+    if (_openStates[index]) {
+      _playMusicIfNeeded(index);
+    } else {
+      _stopMusicWithFadeOutIfNeeded();
+    }
+
     setState(() {
       _doorAudioPlayers[index] = player;
       _openStates[index] = !_openStates[index];
@@ -177,6 +185,53 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   void didAnimate(int index) {
     setState(() {
       _needsAnimating[index] = false;
+    });
+  }
+
+  void _playMusicIfNeeded(int doorIndex) {
+    final int distanceToFinalDoor = doorCount - 1 - doorIndex;
+    if (distanceToFinalDoor < 5) {
+      musicPlayer.setAsset('assets/audio/we_wish_you_a_merry_christmas.m4a');
+      musicPlayer.play();
+    } else if (distanceToFinalDoor < 11) {
+      musicPlayer.setAsset('assets/audio/silent_night.m4a');
+      musicPlayer.play();
+    } else if (distanceToFinalDoor < 17) {
+      musicPlayer.setAsset('assets/audio/jingle_bells.m4a');
+      musicPlayer.play();
+    }
+  }
+
+  void _stopMusicWithFadeOutIfNeeded() {
+    if (!musicPlayer.playing) { return; }
+
+    const double from = 1;
+    const double to = 0;
+    const int len = 1000;
+
+    double vol = from;
+    double diff = to - from;
+    double steps = (diff / 0.01).abs();
+    int stepLen = max(4, (steps > 0) ? len ~/ steps : len);
+    int lastTick = DateTime.now().millisecondsSinceEpoch;
+
+    Timer.periodic(Duration(milliseconds: stepLen), ( Timer t ) {
+      var now = DateTime.now().millisecondsSinceEpoch;
+      var tick = (now - lastTick) / len;
+      lastTick = now;
+      vol += diff * tick;
+
+      vol = max(0, vol);
+      vol = min(1, vol);
+      vol = (vol * 100).round() / 100;
+
+      musicPlayer.setVolume(vol);
+
+      if ( (to < from && vol <= to) || (to > from && vol >= to) ) {
+        t.cancel();
+        musicPlayer.stop();
+        musicPlayer.setVolume(1);
+      }
     });
   }
 }
