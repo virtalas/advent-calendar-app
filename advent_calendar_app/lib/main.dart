@@ -28,15 +28,20 @@ class AdventCalendarApp extends StatefulWidget {
 class _AdventCalendarAppState extends State<AdventCalendarApp>
     with WidgetsBindingObserver {
   static final DateTime finalDate = DateTime(2022, DateTime.december, 24);
-  static final DateTime firstDate = DateTime(finalDate.year, finalDate.month, 1);
+  static final DateTime firstDate =
+      DateTime(finalDate.year, finalDate.month, 1);
   static const int doorCount = 24;
 
   static final AudioPlayer musicPlayer = AudioPlayer();
 
   int _currentDoorNumber = 0;
   List<int> _doorNumbers = [];
-  final List<bool> _openStates = [for (var i = 0; i < doorCount; i++) true]; // TODO: revert
-  final List<bool> _needsAnimating = [for (var i = 0; i < doorCount; i++) false];
+  final List<bool> _openStates = [
+    for (var i = 0; i < doorCount; i++) true
+  ]; // TODO: revert
+  final List<bool> _needsAnimating = [
+    for (var i = 0; i < doorCount; i++) false
+  ];
   final Map<int, AudioPlayer> _doorAudioPlayers = HashMap();
 
   @override
@@ -66,69 +71,103 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   Widget build(BuildContext context) {
     // MediaQuery.of(context).size.width
 
+    final ListView listView = ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 120, horizontal: 0),
+      itemCount: _doorNumbers.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == 0) {
+          final DateTime now = DateTime.now();
+          // final DateTime now = DateTime(2022, DateTime.november, 30); // Use for testing
+          final int daysLeft = daysBetween(now, firstDate);
+          const Widget title = Text(
+            'Joulukalenteri 2022',
+            style: TextStyle(
+                color: Colors.white, fontSize: 40, fontFamily: 'caveatBrush'),
+          );
+
+          final List<Widget> columnChildren;
+          if (_currentDoorNumber == 0) {
+            columnChildren = [
+              title,
+              const SizedBox(height: 50),
+              const Text(
+                'Ensimmäiseen luukkuun vielä',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontFamily: 'caveatBrush'),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '$daysLeft päivää...',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontFamily: 'caveatBrush'),
+              ),
+            ];
+          } else {
+            columnChildren = [title];
+          }
+
+          return Column(children: columnChildren);
+        } else {
+          final int listDoorIndex = index - 1;
+          final int doorNumber = _currentDoorNumber - listDoorIndex;
+          final int doorNumberIndex = doorNumber - 1;
+          // Use InkWell without splash or highlight instead of GestureRecognizer
+          // to recognize taps when CalendarRow door is open.
+          return InkWell(
+            splashFactory: NoSplash.splashFactory,
+            highlightColor: Colors.transparent,
+            onTap: () {
+              _toggleIsOpen(doorNumberIndex);
+            },
+            child: CalendarRow(
+              day: _doorNumbers[doorNumberIndex],
+              isOpen: _openStates[doorNumberIndex],
+              doorNumber: doorNumber,
+              maxDoorCount: doorCount,
+              animated: _needsAnimating[doorNumberIndex],
+              didAnimate: () {
+                didAnimate(doorNumberIndex);
+              },
+            ),
+          );
+        }
+      },
+      separatorBuilder: (BuildContext context, int index) =>
+          const SizedBox(height: 64),
+    );
+
+    const double wreathTop = -180;
+    const double wreathSide = -130;
+
+    final Widget wreath = SizedBox(
+      width: 270,
+      child: Image.asset(
+        'assets/images/wreath.png',
+        fit: BoxFit.fill,
+      ),
+    );
+
     return MaterialApp(
       home: Scaffold(
         backgroundColor: constants.calendarRed,
-        body: ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 0),
-          itemCount: _doorNumbers.length + 1,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == 0) {
-              final DateTime now = DateTime.now();
-              // final DateTime now = DateTime(2022, DateTime.november, 30); // Use for testing
-              final int daysLeft = daysBetween(now, firstDate);
-              const Widget title = Text(
-                'Joulukalenteri 2022',
-                style: TextStyle(color: Colors.white, fontSize: 40, fontFamily: 'caveatBrush'),
-              );
-
-              final List<Widget> columnChildren;
-              if (_currentDoorNumber == 0) {
-                columnChildren = [
-                  title,
-                  const SizedBox(height: 50),
-                  const Text(
-                    'Ensimmäiseen luukkuun vielä',
-                    style: TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'caveatBrush'),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '$daysLeft päivää...',
-                    style: const TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'caveatBrush'),
-                  ),
-                ];
-              } else {
-                columnChildren = [title];
-              }
-
-              return Column(children: columnChildren);
-            } else {
-              final int listDoorIndex = index - 1;
-              final int doorNumber = _currentDoorNumber - listDoorIndex;
-              final int doorNumberIndex = doorNumber - 1;
-              // Use InkWell without splash or highlight instead of GestureRecognizer
-              // to recognize taps when CalendarRow door is open.
-              return InkWell(
-                splashFactory: NoSplash.splashFactory,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  _toggleIsOpen(doorNumberIndex);
-                },
-                child: CalendarRow(
-                  day: _doorNumbers[doorNumberIndex],
-                  isOpen: _openStates[doorNumberIndex],
-                  doorNumber: doorNumber,
-                  maxDoorCount: doorCount,
-                  animated: _needsAnimating[doorNumberIndex],
-                  didAnimate: () {
-                    didAnimate(doorNumberIndex);
-                  },
-                ),
-              );
-            }
-          },
-          separatorBuilder: (BuildContext context, int index) =>
-              const SizedBox(height: 64),
+        body: Stack(
+          children: [
+            listView,
+            Positioned(
+              top: wreathTop,
+              left: wreathSide,
+              child: wreath,
+            ),
+            Positioned(
+              top: wreathTop,
+              right: wreathSide,
+              child: wreath,
+            ),
+          ],
         ),
       ),
     );
@@ -136,7 +175,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
   void _updateCurrentDoor() {
     // final DateTime now = DateTime.now();
-    final DateTime now = DateTime(2022, DateTime.december, 24); // Use for testing
+    final DateTime now =
+        DateTime(2022, DateTime.december, 24); // Use for testing
     final int currentDoorNumber =
         _calculateCurrentDoorNumber(now, finalDate, doorCount);
     final List<int> doorNumbers = [
@@ -203,7 +243,9 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   void _stopMusicWithFadeOutIfNeeded() {
-    if (!musicPlayer.playing) { return; }
+    if (!musicPlayer.playing) {
+      return;
+    }
 
     const double from = 1;
     const double to = 0;
@@ -215,7 +257,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
     int stepLen = max(4, (steps > 0) ? len ~/ steps : len);
     int lastTick = DateTime.now().millisecondsSinceEpoch;
 
-    Timer.periodic(Duration(milliseconds: stepLen), ( Timer t ) {
+    Timer.periodic(Duration(milliseconds: stepLen), (Timer t) {
       var now = DateTime.now().millisecondsSinceEpoch;
       var tick = (now - lastTick) / len;
       lastTick = now;
@@ -227,7 +269,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
       musicPlayer.setVolume(vol);
 
-      if ( (to < from && vol <= to) || (to > from && vol >= to) ) {
+      if ((to < from && vol <= to) || (to > from && vol >= to)) {
         t.cancel();
         musicPlayer.stop();
         musicPlayer.setVolume(1);
