@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.advent_calendar_app">
    <application
-        android:label="Joulukalenteri 2022"
+        android:label="Joulukalenteri"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
