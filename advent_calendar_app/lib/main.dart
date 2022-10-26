@@ -322,6 +322,7 @@ class CalendarRow extends StatelessWidget {
       children: [
         CalendarDoorContent(
           isOpen: isOpen,
+          isAnimatingDoor: animated,
           doorNumber: doorNumber,
           maxDoorCount: maxDoorCount,
           child: doorWidget,

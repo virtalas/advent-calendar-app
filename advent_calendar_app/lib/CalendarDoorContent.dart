@@ -8,12 +8,14 @@ import 'package:snowfall/snowfall/snowflakes.dart';
 
 class CalendarDoorContent extends StatelessWidget {
   final bool isOpen;
+  final bool isAnimatingDoor;
   final int doorNumber;
   final int maxDoorCount;
   final Widget child;
   const CalendarDoorContent({
     super.key,
     required this.isOpen,
+    required this.isAnimatingDoor,
     required this.doorNumber,
     required this.maxDoorCount,
     required this.child,
@@ -40,13 +42,50 @@ class CalendarDoorContent extends StatelessWidget {
       ),
     );
 
+    const firstRow = 'Hyvää joulua ja';
+    const secondRow = ' onnellista uutta vuotta!';
+    const letterDuration = 210;
+    const textAnimationDuration =
+        (firstRow.length + secondRow.length) * letterDuration;
+
     final Widget animatedText = Align(
       alignment: Alignment.bottomCenter,
       child: Container(
         padding: const EdgeInsets.only(bottom: 30),
-        child: isLastDoor ? AnimatedText(isOpen: isOpen) : Container(),
+        child: isLastDoor
+            ? AnimatedText(
+                isOpen: isOpen,
+                firstRow: firstRow,
+                secondRow: secondRow,
+                letterDuration: const Duration(milliseconds: letterDuration),
+              )
+            : Container(),
       ),
     );
+
+    const santaDuration = textAnimationDuration + 7000;
+
+    final Widget santa;
+    if (isLastDoor) {
+      final isAtStart = isOpen && !isAnimatingDoor;
+      santa = Positioned.fill(
+        child: Stack(
+          children: [
+            AnimatedPositioned(
+              top: 25,
+              left: isAtStart ? -1500 : 300,
+              duration: Duration(milliseconds: isAtStart ? 0 : santaDuration),
+              child: Image.asset(
+                'assets/images/santa.png',
+                scale: 2.4,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      santa = Container();
+    }
 
     final Widget snowfallAndDoors = Center(
       // For some reason this SizedBox is needed to display the Stack.
@@ -63,17 +102,15 @@ class CalendarDoorContent extends StatelessWidget {
               ),
             ),
             Positioned.fill(child: animatedText),
+            santa,
             Positioned.fill(child: child),
           ],
         ),
       ),
     );
 
-    return Container(
+    return SizedBox(
       height: constants.doorHeight,
-      decoration: const BoxDecoration(
-        color: Colors.orange,
-      ),
       child: Stack(
         children: [
           image,
@@ -98,6 +135,7 @@ class ClippedSnowfall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DoorOpeningProgressAnimationBuilder(
+      // TODO: Use final show = isOpen && !isAnimatingDoor;
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
         if (progress > 0.1) {
@@ -117,7 +155,9 @@ class ClippedSnowfall extends StatelessWidget {
 
   // Public for testing
   int numberOfSnowflakes(int doorNumber, int maxDoorCount) {
-    if (maxDoorCount == 0) { return 0; }
+    if (maxDoorCount == 0) {
+      return 0;
+    }
 
     final int numberOfDoorsWithSnowflakes = (maxDoorCount * 0.85).round();
     const int maxNumberOfSnowflakes = 8;
@@ -140,12 +180,19 @@ class ClippedSnowfall extends StatelessWidget {
 
 class AnimatedText extends StatelessWidget {
   final bool isOpen;
-  const AnimatedText({super.key, required this.isOpen});
+  final String firstRow;
+  final String secondRow;
+  final Duration letterDuration;
+  const AnimatedText({
+    super.key,
+    required this.isOpen,
+    required this.firstRow,
+    required this.secondRow,
+    required this.letterDuration,
+  });
 
   @override
   Widget build(BuildContext context) {
-    const Duration duration = Duration(milliseconds: 210);
-
     return DoorOpeningProgressAnimationBuilder(
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
@@ -162,8 +209,8 @@ class AnimatedText extends StatelessWidget {
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      'Hyvää joulua ja\n onnellista uutta vuotta!',
-                      speed: duration,
+                      '$firstRow\n$secondRow',
+                      speed: letterDuration,
                       cursor: '',
                     ),
                   ],
