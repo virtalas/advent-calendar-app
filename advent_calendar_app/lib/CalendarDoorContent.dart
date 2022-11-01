@@ -55,7 +55,7 @@ class CalendarDoorContent extends StatelessWidget {
 
     const firstRow = 'Hyvää joulua ja';
     const secondRow = ' onnellista uutta vuotta!';
-    const letterDuration = 210;
+    const letterDuration = 240;
     const textAnimationDuration =
         (firstRow.length + secondRow.length) * letterDuration;
 
@@ -83,7 +83,7 @@ class CalendarDoorContent extends StatelessWidget {
           children: [
             AnimatedPositioned(
               top: 25,
-              left: isDoorFullyClosed ? -1500 : 300,
+              left: isDoorFullyClosed ? -2400 : 300,
               duration: Duration(milliseconds: isDoorFullyClosed ? 0 : santaDuration),
               child: Image.asset(
                 'assets/images/santa.png',
@@ -130,6 +130,8 @@ class CalendarDoorContent extends StatelessWidget {
         height: constants.doorHeight,
         child: Stack(
           children: [
+            santa,
+            snowman,
             Positioned.fill(
               child: ClippedSnowfall(
                 isOpen: isOpen,
@@ -138,8 +140,6 @@ class CalendarDoorContent extends StatelessWidget {
               ),
             ),
             Positioned.fill(child: animatedText),
-            santa,
-            snowman,
             Positioned.fill(child: child),
           ],
         ),
