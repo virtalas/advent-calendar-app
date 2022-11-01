@@ -4,6 +4,7 @@ import 'package:advent_calendar_app/utils.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
+import 'package:simple_animations/simple_animations.dart';
 import 'constants.dart' as constants;
 import 'package:snowfall/snowfall/snowflakes.dart';
 
@@ -74,21 +75,26 @@ class CalendarDoorContent extends StatelessWidget {
       ),
     );
 
-    const santaDuration = textAnimationDuration + 7000;
+    const santaDuration = textAnimationDuration + 8000;
 
     final Widget santa;
-    if (isLastDoor) {
+    if (isLastDoor && !isDoorFullyClosed) {
       santa = Positioned.fill(
         child: Stack(
           children: [
-            AnimatedPositioned(
-              top: 25,
-              left: isDoorFullyClosed ? -2400 : 300,
-              duration: Duration(milliseconds: isDoorFullyClosed ? 0 : santaDuration),
-              child: Image.asset(
-                'assets/images/santa.png',
-                scale: 2.4,
-              ),
+            LoopAnimation(
+              builder: (context, child, double value) {
+                return Positioned(
+                  top: 25,
+                  left: value,
+                  child: Image.asset(
+                    'assets/images/santa.png',
+                    scale: 2.4,
+                  ),
+                );
+              },
+              tween: Tween<double>(begin: -2600, end: 300),
+              duration: const Duration(milliseconds: santaDuration),
             ),
           ],
         ),
