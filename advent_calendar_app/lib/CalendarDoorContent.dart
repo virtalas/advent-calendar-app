@@ -11,8 +11,9 @@ import 'package:snowfall/snowfall/snowflakes.dart';
 class SnowmanInfo {
   double left;
   double bottom;
+  double width;
   bool isMirrored;
-  SnowmanInfo(this.left, this.bottom, this.isMirrored);
+  SnowmanInfo(this.left, this.bottom, this.width, this.isMirrored);
 }
 
 class CalendarDoorContent extends StatelessWidget {
@@ -112,8 +113,8 @@ class CalendarDoorContent extends StatelessWidget {
             bottom: snowmanInfo!.bottom,
             left: snowmanInfo!.left,
             child: SizedBox(
-              width: 250,
-              height: 250,
+              width: snowmanInfo!.width,
+              height: snowmanInfo!.width,
               child: Transform.scale(
                 scaleX: snowmanInfo!.isMirrored ? -1 : 1,
                 child: const RiveAnimation.asset(
@@ -239,6 +240,7 @@ class AnimatedText extends StatelessWidget {
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
         if (progress > 0.1) {
+          const shadowWidth = 0.5;
           return SizedBox(
             width: 220,
             height: 70,
@@ -246,6 +248,29 @@ class AnimatedText extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 30,
                 fontFamily: 'greatVibes',
+                color: Colors.red,
+                shadows: [
+                  Shadow(
+                    // bottomLeft
+                    offset: Offset(-shadowWidth, -shadowWidth),
+                    color: Colors.white,
+                  ),
+                  Shadow(
+                    // bottomRight
+                    offset: Offset(shadowWidth, -shadowWidth),
+                    color: Colors.white,
+                  ),
+                  Shadow(
+                    // topRight
+                    offset: Offset(shadowWidth, shadowWidth),
+                    color: Colors.white,
+                  ),
+                  Shadow(
+                    // topLeft
+                    offset: Offset(-shadowWidth, shadowWidth),
+                    color: Colors.white,
+                  ),
+                ],
               ),
               child: IgnorePointer(
                 child: AnimatedTextKit(
