@@ -118,7 +118,7 @@ class CalendarDoorContent extends StatelessWidget {
               child: Transform.scale(
                 scaleX: snowmanInfo!.isMirrored ? -1 : 1,
                 child: const RiveAnimation.asset(
-                  'assets/images/snowman_rive.riv',
+                  'assets/images/snowman_shadow.riv',
                   animations: ['Timeline 1'],
                 ),
               ),
