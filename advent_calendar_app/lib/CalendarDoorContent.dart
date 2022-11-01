@@ -3,14 +3,23 @@ import 'dart:math';
 import 'package:advent_calendar_app/utils.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 import 'constants.dart' as constants;
 import 'package:snowfall/snowfall/snowflakes.dart';
+
+class SnowmanInfo {
+  double left;
+  double bottom;
+  bool isMirrored;
+  SnowmanInfo(this.left, this.bottom, this.isMirrored);
+}
 
 class CalendarDoorContent extends StatelessWidget {
   final bool isOpen;
   final bool isAnimatingDoor;
   final int doorNumber;
   final int maxDoorCount;
+  final SnowmanInfo? snowmanInfo;
   final Widget child;
   const CalendarDoorContent({
     super.key,
@@ -18,12 +27,14 @@ class CalendarDoorContent extends StatelessWidget {
     required this.isAnimatingDoor,
     required this.doorNumber,
     required this.maxDoorCount,
+    required this.snowmanInfo,
     required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool isLastDoor = doorNumber == maxDoorCount;
+    final isDoorFullyClosed = isOpen && !isAnimatingDoor;
 
     final Widget image = SizedBox(
       height: constants.doorHeight,
@@ -67,14 +78,13 @@ class CalendarDoorContent extends StatelessWidget {
 
     final Widget santa;
     if (isLastDoor) {
-      final isAtStart = isOpen && !isAnimatingDoor;
       santa = Positioned.fill(
         child: Stack(
           children: [
             AnimatedPositioned(
               top: 25,
-              left: isAtStart ? -1500 : 300,
-              duration: Duration(milliseconds: isAtStart ? 0 : santaDuration),
+              left: isDoorFullyClosed ? -1500 : 300,
+              duration: Duration(milliseconds: isDoorFullyClosed ? 0 : santaDuration),
               child: Image.asset(
                 'assets/images/santa.png',
                 scale: 2.4,
@@ -85,6 +95,32 @@ class CalendarDoorContent extends StatelessWidget {
       );
     } else {
       santa = Container();
+    }
+
+    final Widget snowman;
+    if (snowmanInfo != null && !isDoorFullyClosed) {
+      // For some reason need to embed in another Stack, otherwise door gets clipped.
+      snowman = Stack(
+        children: [
+          Positioned(
+            bottom: snowmanInfo!.bottom,
+            left: snowmanInfo!.left,
+            child: SizedBox(
+              width: 250,
+              height: 250,
+              child: Transform.scale(
+                scaleX: snowmanInfo!.isMirrored ? -1 : 1,
+                child: const RiveAnimation.asset(
+                  'assets/images/snowman_rive.riv',
+                  animations: ['Timeline 1'],
+                ),
+              ),
+            ),
+          )
+        ],
+      );
+    } else {
+      snowman = Container();
     }
 
     final Widget snowfallAndDoors = Center(
@@ -103,6 +139,7 @@ class CalendarDoorContent extends StatelessWidget {
             ),
             Positioned.fill(child: animatedText),
             santa,
+            snowman,
             Positioned.fill(child: child),
           ],
         ),
@@ -135,7 +172,6 @@ class ClippedSnowfall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DoorOpeningProgressAnimationBuilder(
-      // TODO: Use final show = isOpen && !isAnimatingDoor;
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
         if (progress > 0.1) {

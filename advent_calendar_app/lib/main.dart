@@ -32,6 +32,11 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
       DateTime(finalDate.year, finalDate.month, 1);
   static const int doorCount = 24;
 
+  static Map<int, SnowmanInfo> snowmanInfos = {
+    17: SnowmanInfo(-30, 0, false),
+    16: SnowmanInfo(50, 0, true),
+  };
+
   static final AudioPlayer musicPlayer = AudioPlayer();
 
   int _currentDoorNumber = 0;
@@ -128,6 +133,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
               isOpen: _openStates[doorNumberIndex],
               doorNumber: doorNumber,
               maxDoorCount: doorCount,
+              snowmanInfo: snowmanInfos[doorNumber],
               animated: _needsAnimating[doorNumberIndex],
               didAnimate: () {
                 didAnimate(doorNumberIndex);
@@ -283,6 +289,7 @@ class CalendarRow extends StatelessWidget {
   final bool isOpen;
   final int doorNumber;
   final int maxDoorCount;
+  final SnowmanInfo? snowmanInfo;
   final bool animated;
   final Function didAnimate;
 
@@ -292,6 +299,7 @@ class CalendarRow extends StatelessWidget {
     required this.isOpen,
     required this.doorNumber,
     required this.maxDoorCount,
+    required this.snowmanInfo,
     required this.animated,
     required this.didAnimate,
   });
@@ -325,6 +333,7 @@ class CalendarRow extends StatelessWidget {
           isAnimatingDoor: animated,
           doorNumber: doorNumber,
           maxDoorCount: maxDoorCount,
+          snowmanInfo: snowmanInfo,
           child: doorWidget,
         ),
       ],
