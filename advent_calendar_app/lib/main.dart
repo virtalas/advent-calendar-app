@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:advent_calendar_app/utils.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 import 'CalendarDoor.dart';
 import 'CalendarDoorContent.dart';
 import 'constants.dart' as constants;
@@ -54,6 +55,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
+    musicPlayer.setLoopMode(LoopMode.one);
     _updateCurrentDoor();
   }
 
