@@ -20,4 +20,4 @@ doc/api/
 *.js.deps
 *.js.map
 
-assets/images/doors/
+advent_calendar_app/assets/images/doors/
