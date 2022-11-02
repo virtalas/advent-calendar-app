@@ -170,6 +170,7 @@ class CalendarDoorContent extends StatelessWidget {
             Positioned.fill(
               child: ClippedSnowfall(
                 isOpen: isOpen,
+                isDoorFullyClosed: isDoorFullyClosed,
                 doorNumber: doorNumber,
                 maxDoorCount: maxDoorCount,
               ),
@@ -195,17 +196,23 @@ class CalendarDoorContent extends StatelessWidget {
 
 class ClippedSnowfall extends StatelessWidget {
   final bool isOpen;
+  final bool isDoorFullyClosed;
   final int doorNumber;
   final int maxDoorCount;
   const ClippedSnowfall({
     super.key,
     required this.isOpen,
+    required this.isDoorFullyClosed,
     required this.doorNumber,
     required this.maxDoorCount,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (isDoorFullyClosed) {
+      return Container();
+    }
+
     return DoorOpeningProgressAnimationBuilder(
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
@@ -261,7 +268,6 @@ class AnimatedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Just use isDoorFullyClosed
     return DoorOpeningProgressAnimationBuilder(
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
