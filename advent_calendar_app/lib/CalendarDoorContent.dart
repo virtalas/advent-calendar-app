@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'dart:io';
 import 'package:advent_calendar_app/utils.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +37,15 @@ class CalendarDoorContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isLastDoor = doorNumber == maxDoorCount;
     final isDoorFullyClosed = isOpen && !isAnimatingDoor;
+    const alwaysShowDefaultImage = false;
+
+    final imageNameForDoorNumber = 'assets/images/doors/$doorNumber.jpeg';
+    final String imageName;
+    if (alwaysShowDefaultImage) {
+      imageName = 'assets/images/default.jpeg';
+    } else {
+      imageName = imageNameForDoorNumber;
+    }
 
     final Widget image = SizedBox(
       height: constants.doorHeight,
@@ -48,7 +57,7 @@ class CalendarDoorContent extends StatelessWidget {
           duration:
               const Duration(milliseconds: constants.doorAnimationDuration),
           child: Image.asset(
-            'assets/images/default.jpeg',
+            imageName,
             fit: BoxFit.fill,
           ),
         ),
