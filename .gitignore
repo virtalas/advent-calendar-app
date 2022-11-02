@@ -21,3 +21,4 @@ doc/api/
 *.js.map
 
 advent_calendar_app/assets/images/doors/
+advent_calendar_app/lib/content.dart
