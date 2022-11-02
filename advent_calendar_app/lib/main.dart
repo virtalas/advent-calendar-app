@@ -71,8 +71,6 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
   @override
   Widget build(BuildContext context) {
-    // MediaQuery.of(context).size.width
-
     final ListView listView = ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 120, horizontal: 0),
       itemCount: _doorNumbers.length + 1,

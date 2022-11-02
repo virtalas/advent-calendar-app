@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:advent_calendar_app/content.dart';
 import 'package:advent_calendar_app/utils.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,13 @@ class TextInfo {
   });
 }
 
+class SnowInfo {
+  int numberOfSnowflakes;
+  SnowInfo({
+    required this.numberOfSnowflakes,
+  });
+}
+
 class CalendarDoorContent extends StatelessWidget {
   final bool isOpen;
   final bool isAnimatingDoor;
@@ -56,7 +64,8 @@ class CalendarDoorContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isLastDoor = doorNumber == maxDoorCount;
     final isDoorFullyClosed = isOpen && !isAnimatingDoor;
-    final isDoorFullyOpenedOrClosing = (!isOpen && !isAnimatingDoor) || (isOpen && isAnimatingDoor);
+    final isDoorFullyOpenedOrClosing =
+        (!isOpen && !isAnimatingDoor) || (isOpen && isAnimatingDoor);
     const alwaysShowDefaultImage = false;
 
     final imageNameForDoorNumber = 'assets/images/doors/$doorNumber.jpeg';
@@ -98,7 +107,9 @@ class CalendarDoorContent extends StatelessWidget {
           ),
         ),
       );
-      textAnimationDuration = (textInfo!.firstRow.length + textInfo!.secondRow.length) * textInfo!.letterDuration;
+      textAnimationDuration =
+          (textInfo!.firstRow.length + textInfo!.secondRow.length) *
+              textInfo!.letterDuration;
     } else {
       animatedText = Container();
       textAnimationDuration = 0;
@@ -220,39 +231,16 @@ class ClippedSnowfall extends StatelessWidget {
           return Container();
         }
 
+        final info = snowflakeInfo[doorNumber];
         return ClipRect(
           child: Snowflakes(
-            numberOfSnowflakes: numberOfSnowflakes(doorNumber, maxDoorCount),
+            numberOfSnowflakes: info?.numberOfSnowflakes ?? 0,
             color: Colors.white,
             alpha: 120,
           ),
         );
       },
     );
-  }
-
-  // Public for testing
-  int numberOfSnowflakes(int doorNumber, int maxDoorCount) {
-    if (maxDoorCount == 0) {
-      return 0;
-    }
-
-    final int numberOfDoorsWithSnowflakes = (maxDoorCount * 0.85).round();
-    const int maxNumberOfSnowflakes = 8;
-    final int borderNumber = maxDoorCount - numberOfDoorsWithSnowflakes;
-
-    if (doorNumber < borderNumber) {
-      return 0;
-    } else {
-      final int aboveBorder = doorNumber - borderNumber;
-      final int finalNumber = maxDoorCount - borderNumber;
-      final double percentage = aboveBorder / finalNumber;
-      return (maxNumberOfSnowflakes * _easeOutSine(percentage)).round();
-    }
-  }
-
-  double _easeOutSine(double x) {
-    return sin((x * 3.141) / 2);
   }
 }
 
