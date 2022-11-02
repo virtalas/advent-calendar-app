@@ -93,7 +93,7 @@ class CalendarDoorContent extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.only(bottom: 30),
           child: AnimatedText(
-            isDoorFullyClosed: isDoorFullyClosed,
+            isOpen: isOpen,
             textInfo: textInfo!,
           ),
         ),
@@ -169,7 +169,7 @@ class CalendarDoorContent extends StatelessWidget {
             snowman,
             Positioned.fill(
               child: ClippedSnowfall(
-                isDoorFullyClosed: isDoorFullyClosed,
+                isOpen: isOpen,
                 doorNumber: doorNumber,
                 maxDoorCount: maxDoorCount,
               ),
@@ -194,29 +194,34 @@ class CalendarDoorContent extends StatelessWidget {
 }
 
 class ClippedSnowfall extends StatelessWidget {
-  final bool isDoorFullyClosed;
+  final bool isOpen;
   final int doorNumber;
   final int maxDoorCount;
   const ClippedSnowfall({
     super.key,
-    required this.isDoorFullyClosed,
+    required this.isOpen,
     required this.doorNumber,
     required this.maxDoorCount,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (isDoorFullyClosed) {
-      return Container();
-    } else {
-      return ClipRect(
-        child: Snowflakes(
-          numberOfSnowflakes: numberOfSnowflakes(doorNumber, maxDoorCount),
-          color: Colors.white,
-          alpha: 120,
-        ),
-      );
-    }
+    return DoorOpeningProgressAnimationBuilder(
+      isOpen: isOpen,
+      builder: (BuildContext context, double progress, Widget? child) {
+        if (progress > 0.1) {
+          return ClipRect(
+            child: Snowflakes(
+              numberOfSnowflakes: numberOfSnowflakes(doorNumber, maxDoorCount),
+              color: Colors.white,
+              alpha: 120,
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   // Public for testing
@@ -245,42 +250,48 @@ class ClippedSnowfall extends StatelessWidget {
 }
 
 class AnimatedText extends StatelessWidget {
-  final bool isDoorFullyClosed;
+  final bool isOpen;
   final TextInfo textInfo;
 
   const AnimatedText({
     super.key,
-    required this.isDoorFullyClosed,
+    required this.isOpen,
     required this.textInfo,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (isDoorFullyClosed) {
-      return Container();
-    } else {
-      return SizedBox(
-        width: 220,
-        height: 70,
-        child: DefaultTextStyle(
-          style: textInfo.style,
-          child: IgnorePointer(
-            child: AnimatedTextKit(
-              animatedTexts: [
-                TypewriterAnimatedText(
-                  '${textInfo.firstRow}\n${textInfo.secondRow}',
-                  speed: Duration(milliseconds: textInfo.letterDuration),
-                  cursor: '',
+    // TODO: Just use isDoorFullyClosed
+    return DoorOpeningProgressAnimationBuilder(
+      isOpen: isOpen,
+      builder: (BuildContext context, double progress, Widget? child) {
+        if (progress > 0.1) {
+          return SizedBox(
+            width: 220,
+            height: 70,
+            child: DefaultTextStyle(
+              style: textInfo.style,
+              child: IgnorePointer(
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TypewriterAnimatedText(
+                      '${textInfo.firstRow}\n${textInfo.secondRow}',
+                      speed: Duration(milliseconds: textInfo.letterDuration),
+                      cursor: '',
+                    ),
+                  ],
+                  pause: const Duration(milliseconds: 0),
+                  displayFullTextOnTap: false,
+                  repeatForever: false,
+                  totalRepeatCount: 1,
                 ),
-              ],
-              pause: const Duration(milliseconds: 0),
-              displayFullTextOnTap: false,
-              repeatForever: false,
-              totalRepeatCount: 1,
+              ),
             ),
-          ),
-        ),
-      );
-    }
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 }

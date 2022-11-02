@@ -31,7 +31,7 @@ void main() {
 
   testWidgets('Number of snowflakes', (WidgetTester tester) async {
     const int maxDoorCount = 24;
-    const ClippedSnowfall clippedSnowfall = ClippedSnowfall(isDoorFullyClosed: true, doorNumber: 0, maxDoorCount: 0);
+    const ClippedSnowfall clippedSnowfall = ClippedSnowfall(isOpen: true, doorNumber: 0, maxDoorCount: 0);
     final snowflakeCounts = [for (var i = 1; i <= maxDoorCount; i++) clippedSnowfall.numberOfSnowflakes(i, maxDoorCount)];
     expect(snowflakeCounts, [0, 0, 0, 0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 8, 8]);
   });
