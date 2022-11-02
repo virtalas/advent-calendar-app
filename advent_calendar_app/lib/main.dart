@@ -43,6 +43,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
     for (var i = 0; i < doorCount; i++) false
   ];
   final Map<int, AudioPlayer> _doorAudioPlayers = HashMap();
+  Timer? _doorAudioFadingTimer;
 
   @override
   initState() {
@@ -202,6 +203,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   void _toggleIsOpen(int index) {
     _doorAudioPlayers[index]?.stop();
     _doorAudioPlayers[index]?.dispose();
+    final newOpenState = !_openStates[index];
 
     final player = AudioPlayer();
     player.setAsset('assets/audio/door1_short.m4a');
@@ -209,15 +211,15 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
     HapticFeedback.lightImpact();
 
-    if (_openStates[index]) {
-      _playMusicIfNeeded(index);
-    } else {
+    if (newOpenState) {
       _stopMusicWithFadeOutIfNeeded();
+    } else {
+      _playMusicIfNeeded(index);
     }
 
     setState(() {
       _doorAudioPlayers[index] = player;
-      _openStates[index] = !_openStates[index];
+      _openStates[index] = newOpenState;
       _needsAnimating[index] = true;
     });
   }
@@ -234,19 +236,22 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   void _playMusicIfNeeded(int doorIndex) {
     final int distanceToFinalDoor = doorCount - 1 - doorIndex;
     if (distanceToFinalDoor < 5) {
+      _cancelDoorAudioFadingTimer(_doorAudioFadingTimer);
       musicPlayer.setAsset('assets/audio/we_wish_you_a_merry_christmas.m4a');
       musicPlayer.play();
     } else if (distanceToFinalDoor < 11) {
+      _cancelDoorAudioFadingTimer(_doorAudioFadingTimer);
       musicPlayer.setAsset('assets/audio/silent_night.m4a');
       musicPlayer.play();
     } else if (distanceToFinalDoor < 17) {
+      _cancelDoorAudioFadingTimer(_doorAudioFadingTimer);
       musicPlayer.setAsset('assets/audio/jingle_bells.m4a');
       musicPlayer.play();
     }
   }
 
   void _stopMusicWithFadeOutIfNeeded() {
-    if (!musicPlayer.playing) {
+    if (!musicPlayer.playing || _doorAudioFadingTimer?.isActive == true) {
       return;
     }
 
@@ -260,24 +265,30 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
     int stepLen = max(4, (steps > 0) ? len ~/ steps : len);
     int lastTick = DateTime.now().millisecondsSinceEpoch;
 
-    Timer.periodic(Duration(milliseconds: stepLen), (Timer t) {
-      var now = DateTime.now().millisecondsSinceEpoch;
-      var tick = (now - lastTick) / len;
-      lastTick = now;
-      vol += diff * tick;
+    setState(() {
+      _doorAudioFadingTimer = Timer.periodic(Duration(milliseconds: stepLen), (Timer t) {
+        var now = DateTime.now().millisecondsSinceEpoch;
+        var tick = (now - lastTick) / len;
+        lastTick = now;
+        vol += diff * tick;
 
-      vol = max(0, vol);
-      vol = min(1, vol);
-      vol = (vol * 100).round() / 100;
+        vol = max(0, vol);
+        vol = min(1, vol);
+        vol = (vol * 100).round() / 100;
 
-      musicPlayer.setVolume(vol);
+        musicPlayer.setVolume(vol);
 
-      if ((to < from && vol <= to) || (to > from && vol >= to)) {
-        t.cancel();
-        musicPlayer.stop();
-        musicPlayer.setVolume(1);
-      }
+        if ((to < from && vol <= to) || (to > from && vol >= to)) {
+          _cancelDoorAudioFadingTimer(t);
+        }
+      });
     });
+  }
+
+  void _cancelDoorAudioFadingTimer(Timer? timer) {
+    timer?.cancel();
+    musicPlayer.stop();
+    musicPlayer.setVolume(1);
   }
 }
 
