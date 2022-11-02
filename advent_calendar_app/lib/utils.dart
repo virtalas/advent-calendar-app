@@ -8,6 +8,7 @@ int daysBetween(DateTime from, DateTime to) {
   return (to.difference(from).inHours / 24).round();
 }
 
+// Used to show/hide a Widget at a certain percentage point for door closing animation.
 class DoorOpeningProgressAnimationBuilder extends StatelessWidget {
   final bool isOpen;
   final Function builder;

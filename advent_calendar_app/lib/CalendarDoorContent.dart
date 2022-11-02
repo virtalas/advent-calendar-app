@@ -216,17 +216,17 @@ class ClippedSnowfall extends StatelessWidget {
     return DoorOpeningProgressAnimationBuilder(
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
-        if (progress > 0.1) {
-          return ClipRect(
-            child: Snowflakes(
-              numberOfSnowflakes: numberOfSnowflakes(doorNumber, maxDoorCount),
-              color: Colors.white,
-              alpha: 120,
-            ),
-          );
-        } else {
+        if (progress <= 0.1) {
           return Container();
         }
+
+        return ClipRect(
+          child: Snowflakes(
+            numberOfSnowflakes: numberOfSnowflakes(doorNumber, maxDoorCount),
+            color: Colors.white,
+            alpha: 120,
+          ),
+        );
       },
     );
   }
@@ -271,32 +271,32 @@ class AnimatedText extends StatelessWidget {
     return DoorOpeningProgressAnimationBuilder(
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
-        if (progress > 0.1) {
-          return SizedBox(
-            width: 220,
-            height: 70,
-            child: DefaultTextStyle(
-              style: textInfo.style,
-              child: IgnorePointer(
-                child: AnimatedTextKit(
-                  animatedTexts: [
-                    TypewriterAnimatedText(
-                      '${textInfo.firstRow}\n${textInfo.secondRow}',
-                      speed: Duration(milliseconds: textInfo.letterDuration),
-                      cursor: '',
-                    ),
-                  ],
-                  pause: const Duration(milliseconds: 0),
-                  displayFullTextOnTap: false,
-                  repeatForever: false,
-                  totalRepeatCount: 1,
-                ),
-              ),
-            ),
-          );
-        } else {
+        if (progress <= 0.1) {
           return Container();
         }
+
+        return SizedBox(
+          width: 220,
+          height: 70,
+          child: DefaultTextStyle(
+            style: textInfo.style,
+            child: IgnorePointer(
+              child: AnimatedTextKit(
+                animatedTexts: [
+                  TypewriterAnimatedText(
+                    '${textInfo.firstRow}\n${textInfo.secondRow}',
+                    speed: Duration(milliseconds: textInfo.letterDuration),
+                    cursor: '',
+                  ),
+                ],
+                pause: const Duration(milliseconds: 0),
+                displayFullTextOnTap: false,
+                repeatForever: false,
+                totalRepeatCount: 1,
+              ),
+            ),
+          ),
+        );
       },
     );
   }
