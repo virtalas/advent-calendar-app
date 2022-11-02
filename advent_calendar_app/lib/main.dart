@@ -8,6 +8,7 @@ import 'CalendarDoor.dart';
 import 'CalendarDoorContent.dart';
 import 'constants.dart' as constants;
 import 'package:flutter/services.dart';
+import 'content.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,13 +31,6 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   static final DateTime finalDate = DateTime(2022, DateTime.december, 24);
   static final DateTime firstDate =
       DateTime(finalDate.year, finalDate.month, 1);
-  static const int doorCount = 24;
-
-  static Map<int, SnowmanInfo> snowmanInfos = {
-    24: SnowmanInfo(160, 30, 165, true),
-    17: SnowmanInfo(-30, 0, 250, false),
-    16: SnowmanInfo(50, 0, 250, true),
-  };
 
   static final AudioPlayer musicPlayer = AudioPlayer();
 
@@ -135,7 +129,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
               isOpen: _openStates[doorNumberIndex],
               doorNumber: doorNumber,
               maxDoorCount: doorCount,
-              snowmanInfo: snowmanInfos[doorNumber],
+              textInfo: textInfo[doorNumber],
+              snowmanInfo: snowmanInfo[doorNumber],
               animated: _needsAnimating[doorNumberIndex],
               didAnimate: () {
                 didAnimate(doorNumberIndex);
@@ -291,6 +286,7 @@ class CalendarRow extends StatelessWidget {
   final bool isOpen;
   final int doorNumber;
   final int maxDoorCount;
+  final TextInfo? textInfo;
   final SnowmanInfo? snowmanInfo;
   final bool animated;
   final Function didAnimate;
@@ -301,6 +297,7 @@ class CalendarRow extends StatelessWidget {
     required this.isOpen,
     required this.doorNumber,
     required this.maxDoorCount,
+    required this.textInfo,
     required this.snowmanInfo,
     required this.animated,
     required this.didAnimate,
@@ -335,6 +332,7 @@ class CalendarRow extends StatelessWidget {
           isAnimatingDoor: animated,
           doorNumber: doorNumber,
           maxDoorCount: maxDoorCount,
+          textInfo: textInfo,
           snowmanInfo: snowmanInfo,
           child: doorWidget,
         ),

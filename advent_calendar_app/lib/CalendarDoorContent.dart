@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:io';
 import 'package:advent_calendar_app/utils.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,25 @@ class SnowmanInfo {
   double bottom;
   double width;
   bool isMirrored;
-  SnowmanInfo(this.left, this.bottom, this.width, this.isMirrored);
+  SnowmanInfo({
+    required this.left,
+    required this.bottom,
+    required this.width,
+    required this.isMirrored,
+  });
+}
+
+class TextInfo {
+  String firstRow;
+  String secondRow;
+  int letterDuration;
+  TextStyle style;
+  TextInfo({
+    required this.firstRow,
+    required this.secondRow,
+    required this.letterDuration,
+    required this.style,
+  });
 }
 
 class CalendarDoorContent extends StatelessWidget {
@@ -21,6 +38,7 @@ class CalendarDoorContent extends StatelessWidget {
   final bool isAnimatingDoor;
   final int doorNumber;
   final int maxDoorCount;
+  final TextInfo? textInfo;
   final SnowmanInfo? snowmanInfo;
   final Widget child;
   const CalendarDoorContent({
@@ -29,6 +47,7 @@ class CalendarDoorContent extends StatelessWidget {
     required this.isAnimatingDoor,
     required this.doorNumber,
     required this.maxDoorCount,
+    required this.textInfo,
     required this.snowmanInfo,
     required this.child,
   });
@@ -37,6 +56,7 @@ class CalendarDoorContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isLastDoor = doorNumber == maxDoorCount;
     final isDoorFullyClosed = isOpen && !isAnimatingDoor;
+    final isDoorFullyOpenedOrClosing = (!isOpen && !isAnimatingDoor) || (isOpen && isAnimatingDoor);
     const alwaysShowDefaultImage = false;
 
     final imageNameForDoorNumber = 'assets/images/doors/$doorNumber.jpeg';
@@ -64,30 +84,29 @@ class CalendarDoorContent extends StatelessWidget {
       ),
     );
 
-    const firstRow = 'Hyvää joulua ja';
-    const secondRow = ' onnellista uutta vuotta!';
-    const letterDuration = 240;
-    const textAnimationDuration =
-        (firstRow.length + secondRow.length) * letterDuration;
+    final Widget animatedText;
+    final int textAnimationDuration;
 
-    final Widget animatedText = Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        padding: const EdgeInsets.only(bottom: 30),
-        child: isLastDoor
-            ? AnimatedText(
-                isOpen: isOpen,
-                firstRow: firstRow,
-                secondRow: secondRow,
-                letterDuration: const Duration(milliseconds: letterDuration),
-              )
-            : Container(),
-      ),
-    );
-
-    const santaDuration = textAnimationDuration + 8000;
+    if (textInfo != null && isDoorFullyOpenedOrClosing) {
+      animatedText = Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          padding: const EdgeInsets.only(bottom: 30),
+          child: AnimatedText(
+            isOpen: isOpen,
+            textInfo: textInfo!,
+          ),
+        ),
+      );
+      textAnimationDuration = (textInfo!.firstRow.length + textInfo!.secondRow.length) * textInfo!.letterDuration;
+    } else {
+      animatedText = Container();
+      textAnimationDuration = 0;
+    }
 
     final Widget santa;
+    final santaDuration = textAnimationDuration + 8000;
+
     if (isLastDoor && !isDoorFullyClosed) {
       santa = Positioned.fill(
         child: Stack(
@@ -104,7 +123,7 @@ class CalendarDoorContent extends StatelessWidget {
                 );
               },
               tween: Tween<double>(begin: -2600, end: 300),
-              duration: const Duration(milliseconds: santaDuration),
+              duration: Duration(milliseconds: santaDuration),
             ),
           ],
         ),
@@ -232,61 +251,32 @@ class ClippedSnowfall extends StatelessWidget {
 
 class AnimatedText extends StatelessWidget {
   final bool isOpen;
-  final String firstRow;
-  final String secondRow;
-  final Duration letterDuration;
+  final TextInfo textInfo;
+
   const AnimatedText({
     super.key,
     required this.isOpen,
-    required this.firstRow,
-    required this.secondRow,
-    required this.letterDuration,
+    required this.textInfo,
   });
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Just use isDoorFullyClosed
     return DoorOpeningProgressAnimationBuilder(
       isOpen: isOpen,
       builder: (BuildContext context, double progress, Widget? child) {
         if (progress > 0.1) {
-          const shadowWidth = 0.5;
           return SizedBox(
             width: 220,
             height: 70,
             child: DefaultTextStyle(
-              style: const TextStyle(
-                fontSize: 30,
-                fontFamily: 'greatVibes',
-                color: Colors.red,
-                shadows: [
-                  Shadow(
-                    // bottomLeft
-                    offset: Offset(-shadowWidth, -shadowWidth),
-                    color: Colors.white,
-                  ),
-                  Shadow(
-                    // bottomRight
-                    offset: Offset(shadowWidth, -shadowWidth),
-                    color: Colors.white,
-                  ),
-                  Shadow(
-                    // topRight
-                    offset: Offset(shadowWidth, shadowWidth),
-                    color: Colors.white,
-                  ),
-                  Shadow(
-                    // topLeft
-                    offset: Offset(-shadowWidth, shadowWidth),
-                    color: Colors.white,
-                  ),
-                ],
-              ),
+              style: textInfo.style,
               child: IgnorePointer(
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      '$firstRow\n$secondRow',
-                      speed: letterDuration,
+                      '${textInfo.firstRow}\n${textInfo.secondRow}',
+                      speed: Duration(milliseconds: textInfo.letterDuration),
                       cursor: '',
                     ),
                   ],
