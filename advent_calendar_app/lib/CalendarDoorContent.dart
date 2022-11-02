@@ -158,7 +158,7 @@ class CalendarDoorContent extends StatelessWidget {
       snowman = Container();
     }
 
-    final Widget snowfallAndDoors = Center(
+    final Widget doorAndContent = Center(
       // For some reason this SizedBox is needed to display the Stack.
       child: SizedBox(
         width: constants.doorHeight,
@@ -186,7 +186,7 @@ class CalendarDoorContent extends StatelessWidget {
       child: Stack(
         children: [
           image,
-          snowfallAndDoors,
+          doorAndContent,
         ],
       ),
     );
