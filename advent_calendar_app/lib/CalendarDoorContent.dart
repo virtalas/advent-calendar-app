@@ -13,6 +13,7 @@ class SnowmanInfo {
   double bottom;
   double width;
   bool isMirrored;
+
   SnowmanInfo({
     required this.left,
     required this.bottom,
@@ -26,16 +27,20 @@ class TextInfo {
   String secondRow;
   int letterDuration;
   TextStyle style;
+  double height;
+
   TextInfo({
     required this.firstRow,
     required this.secondRow,
     required this.letterDuration,
     required this.style,
+    required this.height,
   });
 }
 
 class SnowInfo {
   int numberOfSnowflakes;
+
   SnowInfo({
     required this.numberOfSnowflakes,
   });
@@ -264,8 +269,8 @@ class AnimatedText extends StatelessWidget {
         }
 
         return SizedBox(
-          width: 220,
-          height: 70,
+          width: 250,
+          height: textInfo.height,
           child: DefaultTextStyle(
             style: textInfo.style,
             child: IgnorePointer(
