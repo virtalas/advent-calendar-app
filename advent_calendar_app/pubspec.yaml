@@ -108,6 +108,9 @@ flutter:
     - family: caveatBrush
       fonts:
         - asset: assets/fonts/CaveatBrush-Regular.ttf
+    - family: kleeOne
+      fonts:
+        - asset: assets/fonts/KleeOne-SemiBold.ttf
 
 flutter_icons:
   android: true
