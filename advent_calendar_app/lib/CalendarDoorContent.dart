@@ -28,6 +28,7 @@ class TextInfo {
   int letterDuration;
   TextStyle style;
   double height;
+  TextAlign? textAlign;
 
   TextInfo({
     required this.firstRow,
@@ -35,6 +36,7 @@ class TextInfo {
     required this.letterDuration,
     required this.style,
     required this.height,
+    this.textAlign,
   });
 }
 
@@ -278,6 +280,7 @@ class AnimatedText extends StatelessWidget {
                 animatedTexts: [
                   TypewriterAnimatedText(
                     '${textInfo.firstRow}\n${textInfo.secondRow}',
+                    textAlign: textInfo.textAlign ?? TextAlign.start,
                     speed: Duration(milliseconds: textInfo.letterDuration),
                     cursor: '',
                   ),
