@@ -176,9 +176,9 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   void _updateCurrentDoor() {
-    // final DateTime now = DateTime.now();
-    final DateTime now =
-        DateTime(2022, DateTime.december, 24); // Use for testing
+    final DateTime now = DateTime.now();
+    // final DateTime now =
+    //     DateTime(2022, DateTime.december, 24); // Use for testing
     final int currentDoorNumber =
         _calculateCurrentDoorNumber(now, finalDate, doorCount);
     final List<int> doorNumbers = [
