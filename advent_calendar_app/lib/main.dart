@@ -154,6 +154,12 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
     );
 
     return MaterialApp(
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child ?? Container(),
+        );
+      },
       home: Scaffold(
         backgroundColor: constants.calendarRed,
         body: Stack(
