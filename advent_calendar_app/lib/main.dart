@@ -44,6 +44,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   ];
   final Map<int, AudioPlayer> _doorAudioPlayers = HashMap();
   Timer? _doorAudioFadingTimer;
+  String? _currentlyPlayingMusicAsset;
 
   @override
   initState() {
@@ -209,17 +210,17 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
     HapticFeedback.lightImpact();
 
-    if (newOpenState) {
-      _stopMusicWithFadeOutIfNeeded();
-    } else {
-      _playMusicIfNeeded(index);
-    }
-
     setState(() {
       _doorAudioPlayers[index] = player;
       _openStates[index] = newOpenState;
       _needsAnimating[index] = true;
     });
+
+    if (newOpenState) {
+      _stopMusicWithFadeOutIfNeeded();
+    } else {
+      _playMusicIfNeeded(index);
+    }
   }
 
   // Hack used together with _needsAnimating to only animate doors on user tap.
@@ -232,25 +233,59 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   void _playMusicIfNeeded(int doorIndex) {
+    final musicAsset = _musicAssetForDoor(doorIndex);
+    if (musicAsset == null || musicAsset == _currentlyPlayingMusicAsset) {
+      // If the same music is already playing, don't restart the player.
+      return;
+    }
+
+    _cancelDoorAudioFadingTimer(_doorAudioFadingTimer);
+    musicPlayer.setAsset(musicAsset);
+    musicPlayer.play();
+    setState(() {
+      _currentlyPlayingMusicAsset = musicAsset;
+    });
+  }
+
+  String? _musicAssetForDoor(int doorIndex) {
     final int distanceToFinalDoor = doorCount - 1 - doorIndex;
     if (distanceToFinalDoor < 5) {
-      _cancelDoorAudioFadingTimer(_doorAudioFadingTimer);
-      musicPlayer.setAsset('assets/audio/we_wish_you_a_merry_christmas.m4a');
-      musicPlayer.play();
+      return 'assets/audio/we_wish_you_a_merry_christmas.m4a';
     } else if (distanceToFinalDoor < 11) {
-      _cancelDoorAudioFadingTimer(_doorAudioFadingTimer);
-      musicPlayer.setAsset('assets/audio/silent_night.m4a');
-      musicPlayer.play();
+      return 'assets/audio/silent_night.m4a';
     } else if (distanceToFinalDoor < 17) {
-      _cancelDoorAudioFadingTimer(_doorAudioFadingTimer);
-      musicPlayer.setAsset('assets/audio/jingle_bells.m4a');
-      musicPlayer.play();
+      return 'assets/audio/jingle_bells.m4a';
     }
   }
 
   void _stopMusicWithFadeOutIfNeeded() {
     if (!musicPlayer.playing || _doorAudioFadingTimer?.isActive == true) {
       return;
+    }
+
+    // If there's some open door that plays the currently playing music, don't stop the player.
+    for (var doorIndex = 0; doorIndex < _currentDoorNumber; doorIndex++) {
+      final doorIsOpen = !_openStates[doorIndex];
+      final doorIsPlayingCurrentMusic = _musicAssetForDoor(doorIndex) == _currentlyPlayingMusicAsset;
+      if (doorIsOpen && doorIsPlayingCurrentMusic) {
+        return;
+      }
+    }
+
+    // If there's some open door that plays a different music than the currently playing music, switch the player to that music.
+    for (var doorIndex = 0; doorIndex < _currentDoorNumber; doorIndex++) {
+      final doorIsOpen = !_openStates[doorIndex];
+      final doorMusicAsset = _musicAssetForDoor(doorIndex);
+      final doorIsPlayingOtherMusic = doorMusicAsset != null && doorMusicAsset != _currentlyPlayingMusicAsset;
+      if (doorIsOpen && doorIsPlayingOtherMusic) {
+        musicPlayer.stop();
+        musicPlayer.setAsset(doorMusicAsset);
+        musicPlayer.play();
+        setState(() {
+          _currentlyPlayingMusicAsset = doorMusicAsset;
+        });
+        return;
+      }
     }
 
     const double from = 1;
@@ -287,6 +322,9 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
     timer?.cancel();
     musicPlayer.stop();
     musicPlayer.setVolume(1);
+    setState(() {
+      _currentlyPlayingMusicAsset = null;
+    });
   }
 }
 
