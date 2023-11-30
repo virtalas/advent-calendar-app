@@ -1,4 +1,4 @@
-package com.example.advent_calendar_app
+package com.example.advent_calendar_app_2023
 
 import io.flutter.embedding.android.FlutterActivity
 

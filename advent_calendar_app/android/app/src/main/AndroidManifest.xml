@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.advent_calendar_app">
+    package="com.example.advent_calendar_app_2023">
    <application
         android:label="Joulukalenteri"
         android:name="${applicationName}"
