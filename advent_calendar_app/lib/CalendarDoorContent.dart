@@ -29,6 +29,7 @@ class TextInfo {
   TextStyle style;
   double height;
   TextAlign? textAlign;
+  double? bottomMargin;
 
   TextInfo({
     required this.firstRow,
@@ -37,6 +38,7 @@ class TextInfo {
     required this.style,
     required this.height,
     this.textAlign,
+    this.bottomMargin,
   });
 }
 
@@ -75,7 +77,7 @@ class CalendarDoorContent extends StatelessWidget {
         (!isOpen && !isAnimatingDoor) || (isOpen && isAnimatingDoor);
     const alwaysShowDefaultImage = false;
 
-    final imageNameForDoorNumber = 'assets/images/doors/$doorNumber.jpeg';
+    final imageNameForDoorNumber = 'assets/images/doors/$doorNumber.jpg';
     final String imageName;
     if (alwaysShowDefaultImage) {
       imageName = 'assets/images/default.jpeg';
@@ -88,7 +90,8 @@ class CalendarDoorContent extends StatelessWidget {
       width: constants.doorHeight,
       child: ClipRect(
         child: AnimatedScale(
-          scale: isOpen ? 1 : 1.1,
+          // scale: isOpen ? 1 : 1.1,
+          scale: 1, // Disable zoom/scale animation for 2023
           curve: Curves.easeInOutSine,
           duration:
               const Duration(milliseconds: constants.doorAnimationDuration),
@@ -107,7 +110,7 @@ class CalendarDoorContent extends StatelessWidget {
       animatedText = Align(
         alignment: Alignment.bottomCenter,
         child: Container(
-          padding: const EdgeInsets.only(bottom: 30),
+          padding: EdgeInsets.only(bottom: textInfo!.bottomMargin ?? 30),
           child: AnimatedText(
             isOpen: isOpen,
             textInfo: textInfo!,

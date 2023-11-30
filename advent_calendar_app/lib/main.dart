@@ -28,7 +28,7 @@ class AdventCalendarApp extends StatefulWidget {
 
 class _AdventCalendarAppState extends State<AdventCalendarApp>
     with WidgetsBindingObserver {
-  static final DateTime finalDate = DateTime(2022, DateTime.december, 24);
+  static final DateTime finalDate = DateTime(2023, DateTime.december, 24);
   static final DateTime firstDate =
       DateTime(finalDate.year, finalDate.month, 1);
 
@@ -81,7 +81,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
           // final DateTime now = DateTime(2022, DateTime.november, 30); // Use for testing
           final int daysLeft = daysBetween(now, firstDate);
           const Widget title = Text(
-            'Joulukalenteri 2022',
+            'Joulukalenteri 2023',
             style: TextStyle(
                 color: Colors.white, fontSize: 40, fontFamily: 'caveatBrush'),
           );
@@ -248,14 +248,21 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
   }
 
   String? _musicAssetForDoor(int doorIndex) {
-    final int distanceToFinalDoor = doorCount - 1 - doorIndex;
-    if (distanceToFinalDoor < 5) {
-      return 'assets/audio/we_wish_you_a_merry_christmas.m4a';
-    } else if (distanceToFinalDoor < 11) {
-      return 'assets/audio/silent_night.m4a';
-    } else if (distanceToFinalDoor < 17) {
-      return 'assets/audio/jingle_bells.m4a';
+    final int nannichime = doorIndex + 1;
+    if (nannichime >= 1 && nannichime <= 3) {
+      return 'assets/audio/1_.m4a';
+    } else if (nannichime <= 7) {
+      return 'assets/audio/2.m4a';
+    } else if (nannichime <= 11) {
+      return 'assets/audio/3.m4a';
+    } else if (nannichime <= 15) {
+      return 'assets/audio/4.m4a';
+    } else if (nannichime <= 19) {
+      return 'assets/audio/5.m4a';
+    } else if (nannichime <= 23) {
+      return 'assets/audio/6.m4a';
     }
+    return 'assets/audio/7_.m4a';
   }
 
   void _stopMusicWithFadeOutIfNeeded() {

@@ -30,7 +30,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/rive_common/macos
 
 SPEC CHECKSUMS:
-  audio_session: 308ec27a29f6cbe60787e615bdd26a44ca2943e3
+  audio_session: dea1f41890dbf1718f04a56f1d6150fd50039b72
   FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
   just_audio: 282b8ec036006b65923b9637e46f4a3aa44388e3
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
