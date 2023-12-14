@@ -30,12 +30,12 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/rive_common/macos
 
 SPEC CHECKSUMS:
-  audio_session: dea1f41890dbf1718f04a56f1d6150fd50039b72
+  audio_session: 4812686be7bc77c5726739d4c6a9b4a1f89358c5
   FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
   just_audio: 282b8ec036006b65923b9637e46f4a3aa44388e3
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   rive_common: 4b6702e206fad91c52f487a1b37107554b314701
 
-PODFILE CHECKSUM: b1bef94483d952507c697679f3ce5d99309d1700
+PODFILE CHECKSUM: c2686af096b3ed0d48f95aa489eb1832dc6e07cc
 
 COCOAPODS: 1.14.3
