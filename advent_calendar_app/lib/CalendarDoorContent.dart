@@ -90,8 +90,8 @@ class CalendarDoorContent extends StatelessWidget {
       width: constants.doorHeight,
       child: ClipRect(
         child: AnimatedScale(
-          // scale: isOpen ? 1 : 1.1,
-          scale: 1, // Disable zoom/scale animation for 2023
+          scale: isOpen ? 1 : 1.1,
+          // scale: 1, // Disable zoom/scale animation for 2023
           curve: Curves.easeInOutSine,
           duration:
               const Duration(milliseconds: constants.doorAnimationDuration),

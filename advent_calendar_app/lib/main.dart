@@ -28,7 +28,7 @@ class AdventCalendarApp extends StatefulWidget {
 
 class _AdventCalendarAppState extends State<AdventCalendarApp>
     with WidgetsBindingObserver {
-  static final DateTime finalDate = DateTime(2023, DateTime.december, 24);
+  static final DateTime finalDate = DateTime(2024, DateTime.december, 24);
   static final DateTime firstDate =
       DateTime(finalDate.year, finalDate.month, 1);
 
@@ -81,7 +81,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
           // final DateTime now = DateTime(2022, DateTime.november, 30); // Use for testing
           final int daysLeft = daysBetween(now, firstDate);
           const Widget title = Text(
-            'Joulukalenteri 2023',
+            'Joulukalenteri 2024',
             style: TextStyle(
                 color: Colors.white, fontSize: 40, fontFamily: 'caveatBrush'),
           );
@@ -178,8 +178,7 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
   void _updateCurrentDoor() {
     final DateTime now = DateTime.now();
-    // final DateTime now =
-    //     DateTime(2022, DateTime.december, 24); // Use for testing
+    // final DateTime now = DateTime(2024, DateTime.december, 24); // Use for testing
     final int currentDoorNumber =
         _calculateCurrentDoorNumber(now, finalDate, doorCount);
     final List<int> doorNumbers = [
@@ -249,20 +248,49 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
 
   String? _musicAssetForDoor(int doorIndex) {
     final int nannichime = doorIndex + 1;
-    if (nannichime >= 1 && nannichime <= 3) {
-      return 'assets/audio/1_.m4a';
-    } else if (nannichime <= 7) {
-      return 'assets/audio/2.m4a';
-    } else if (nannichime <= 11) {
-      return 'assets/audio/3.m4a';
-    } else if (nannichime <= 15) {
-      return 'assets/audio/4.m4a';
-    } else if (nannichime <= 19) {
-      return 'assets/audio/5.m4a';
-    } else if (nannichime <= 23) {
-      return 'assets/audio/6.m4a';
+
+    switch (nannichime) {
+      case 1:
+        return 'assets/audio/hei_kuuraparta.m4a';
+      case 2:
+        return 'assets/audio/hei_mummo.m4a';
+      case 3:
+      case 4:
+      case 5:
+        return 'assets/audio/kun_joulupukki_suukon_sai.m4a';
+      case 6:
+        return 'assets/audio/6.m4a';
+      case 7:
+      case 8:
+        return 'assets/audio/varpunen_jouluaamuna.m4a';
+      case 9:
+      case 10:
+        return 'assets/audio/joulun_kellot.m4a';
+      case 11:
+        return 'assets/audio/rekiretki.m4a';
+      case 12:
+        return 'assets/audio/kun_joulu_on.m4a';
+      case 13:
+      case 14:
+        return 'assets/audio/tonttu.m4a';
+      case 15:
+        return 'assets/audio/Neguse.m4a';
+      case 16:
+        return 'assets/audio/16.m4a';
+      case 17:
+        return 'assets/audio/17.m4a';
+      case 18:
+      case 19:
+      case 20:
+        return 'assets/audio/joulumaa.m4a';
+      case 21:
+        return 'assets/audio/21.m4a';
+      case 22:
+      case 23:
+        return 'assets/audio/tule_joulu_kultainen.m4a';
+      default:
+        return 'assets/audio/me_joulua_toivotamme.m4a';
     }
-    return 'assets/audio/7_.m4a';
   }
 
   void _stopMusicWithFadeOutIfNeeded() {
