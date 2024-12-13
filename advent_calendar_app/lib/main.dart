@@ -9,6 +9,7 @@ import 'CalendarDoorContent.dart';
 import 'constants.dart' as constants;
 import 'package:flutter/services.dart';
 import 'content.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -153,6 +154,8 @@ class _AdventCalendarAppState extends State<AdventCalendarApp>
         fit: BoxFit.fill,
       ),
     );
+
+    WakelockPlus.enable();
 
     return MaterialApp(
       home: Scaffold(
